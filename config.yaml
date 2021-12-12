@@ -1,0 +1,47 @@
+---
+
+baseURL: "https://www.relg.uk/"
+languageCode: "en-us"
+title: "relg.uk"
+theme: "PaperMod"
+
+outputs:
+  home:
+    - HTML
+    - RSS
+    - JSON
+
+params:
+  defaultTheme: "dark"
+  homeInfoParams:
+    Title: "Hi there 👋"
+    Content: Can be Info, links, about...
+  socialIcons:
+    - name: "github"
+      url: "https://github.com/syphdias"
+    - name: "RSS"
+      url: "index.xml"
+  editPost:
+    URL: "https://github.com/syphdias/syphdias.github.io/edit/main/content"
+    appendFilePath: True
+    Text: "Suggest Changes"
+  ShowReadingTime: True
+
+menu:
+  main:
+    - identifier: search
+      name: search
+      url: /search/
+      weight: 10
+    - identifier: archive
+      name: archive
+      url: /archives/
+      weight: 20
+languages:
+  en:
+    weight: 1
+    languageName: "English"
+  de:
+    weight: 2
+    languageName: ":de:"
+
