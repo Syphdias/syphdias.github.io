@@ -22,3 +22,5 @@ Use this to run static site generation locally and host a local webserver.
 ```
 hugo server
 ```
+
+[GitHub Pages]: https://docs.github.com/en/pages
