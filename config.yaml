@@ -15,7 +15,7 @@ params:
   defaultTheme: "dark"
   homeInfoParams:
     Title: "Hi there 👋"
-    Content: Can be Info, links, about...
+    Content: "OpenSourcerer 🧙 (FOSS) who loves chocolate"
   socialIcons:
     - name: "github"
       url: "https://github.com/syphdias"
@@ -26,6 +26,7 @@ params:
     appendFilePath: True
     Text: "Suggest Changes"
   ShowReadingTime: True
+  ShowFullTextinRSS: True
 
 menu:
   main:
