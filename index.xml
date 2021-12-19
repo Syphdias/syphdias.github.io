@@ -1,2 +1,52 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>relg.uk</title><link>https://www.relg.uk/</link><description>Recent content on relg.uk</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Fri, 17 Dec 2021 20:06:17 +0100</lastBuildDate><atom:link href="https://www.relg.uk/index.xml" rel="self" type="application/rss+xml"/><item><title>Starting to Blog</title><link>https://www.relg.uk/posts/starting-to-blog/</link><pubDate>Fri, 17 Dec 2021 20:06:17 +0100</pubDate><guid>https://www.relg.uk/posts/starting-to-blog/</guid><description>Recently re-inspired to start to blog, I decided to open – same as Jay Faulkner – with a meta post about why, what to expect, and how I (will) do it.
-Why I Want to Blog If I start to learn a new topic, I feel like a total beginner. But the more I learn about something, the more I can draw from related topics to generate a more complete understanding of how it works.</description></item></channel></rss>
+Why I Want to Blog If I start to learn a new topic, I feel like a total beginner. But the more I learn about something, the more I can draw from related topics to generate a more complete understanding of how it works.</description><content:encoded><![CDATA[<p>Recently re-inspired to start to blog, I decided to open – same as
+<a href="https://jay.jvf.cc/posts/about-itself/">Jay Faulkner</a> – with a meta post about why, what to expect, and how I (will) do
+it.</p>
+<h2 id="why-i-want-to-blog">Why I Want to Blog</h2>
+<p>If I start to learn a new topic, I feel like a total beginner. But the more I
+learn about something, the more I can draw from related topics to generate a
+more complete understanding of how it works. We all go through this. But
+at which point is it okay to talk about it as if you were knowledgable about the
+topic? I would say, do it earlier than you think, be honest about your state of
+understanding, and do not be afraid to be wrong (as long as it does not kill
+anyone). Writing is understanding.</p>
+<p>When you write – or speak – about a topic several things happen. You are forced
+to form complete sentences and express the idea as clear as you can. While you
+do, you might discover that you are still missing pieces or that your current
+understanding is wrong is some way. Another thing you might notice is, that you
+are unsure, if it is correct. Again, do not be afraid to be wrong but take the
+opportunity to learn more. Maybe there is another way to look at the concept
+that might be easier to explain. Writing about topic or concept can be helpful
+to someone reading it as well as writing about the learning experiences itself.
+My hope is to write about topics where I am on the way up from the valley of
+despair (Dunning–Kruger effect) or make the valley not as deep.
+I currently only write into my personal notes – mainly for documentation and
+findability. But it is too easy to just jot down bullet points and not actually
+understanding what you have written. I hope blogging deepens my understanding of
+things and also helps others understand the topic a little bit better.</p>
+<h2 id="inspiration">Inspiration</h2>
+<p>I read some other tech blogs like <a href="https://xahteiwi.eu/">Florian Haas</a>, <a href="https://michael.stapelberg.ch/">Michael Stapelberg</a>, and
+<a href="https://blog.koehntopp.info/">Kristian Köhntopp</a>. I hugely respect all of them and enjoy their different
+content. I also enjoy the content <a href="https://www.youtube.com/channel/UClcE-kVhqyiHCcjYwcpfj9w">liveoverflow</a> produces on YouTube.</p>
+<h2 id="what-to-expect">What to Expect</h2>
+<p>There is not set path for what you will find here in the future but I have some
+rough ideas what topics to cover.
+Subject to change but stuff I currently thing about:</p>
+<ul>
+<li>debugging issues and learning experiences</li>
+<li>git, gnupg, gaming on Linux, i3, restic and systemd, scripts, vim, zsh</li>
+<li><a href="https://obsidian.md/">Obsidian</a>: documentation, note taking</li>
+<li>maybe opinions: remote work</li>
+<li>eventually: slides to talks</li>
+</ul>
+<h2 id="how-i-blog">How I Blog</h2>
+<p>Most importantly – since this is something new to me – irregular and
+opportunistic. If I find something interesting enough, you will find it here.</p>
+<p>On the technical side: The repo <a href="https://github.com/Syphdias/syphdias.github.io">syphdias.github.io</a> contains this page&rsquo;s
+contents as markdown files and configuration files. <a href="https://docs.github.com/en/actions">GitHub Actions</a> are being
+used to use <a href="https://github.com/gohugoio/hugo">hugo</a> with the theme <a href="https://github.com/adityatelange/hugo-PaperMod">PaperMod</a> to generate a static page on the
+branch <code>gh-pages</code>. It is then hosted by <a href="https://docs.github.com/en/pages">GitHub Pages</a>.</p>
+<p>There is a <a href="https://www.relg.uk/index.xml">RSS/Atom feed</a> you can use and I might enable comments if I am in
+the mood.</p>
+<p>If you find mistakes in any of my posts, feel free to contribute a pull request.</p>
+]]></content:encoded></item></channel></rss>
