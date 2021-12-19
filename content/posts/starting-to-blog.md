@@ -1,7 +1,7 @@
 ---
 title: "Starting to Blog"
 date: 2021-12-17T20:06:17+01:00
-draft: true
+draft: false
 ---
 
 Recently re-inspired to start to blog, I decided to open – same as
