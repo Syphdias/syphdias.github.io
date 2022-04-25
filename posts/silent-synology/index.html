@@ -187,7 +187,7 @@ md0 : active raid1 sdb1[1] sda1[0]
       2490176 blocks [4/2] [UU__]
 [...]
 </code></pre><p>Synology did not like that.
-<img loading=lazy src=/posts/drives_system_partition_failed.png alt="Drives 3 and 4 report System Partition Failed">
+<img loading=lazy src=/posts/silent-synology/drives_system_partition_failed.png alt="Drives 3 and 4 report System Partition Failed">
 <strong>Important</strong>: Do <strong>not</strong> shrink the arrays. I did so at first (<code>mdadm /dev/md0 --grow -n 2</code>, same for <code>md1</code>) but when I later rebooted the machine, it went to
 the setup wizard instead. Fixing this was easy: I shut down the NAS, removed the
 HDDs and booted again. After it was done, I inserted the HDDs again, and
