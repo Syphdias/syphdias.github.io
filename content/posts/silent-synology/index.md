@@ -287,7 +287,7 @@ md0 : active raid1 sdb1[1] sda1[0]
 [...]
 ```
 Synology did not like that.
-![Drives 3 and 4 report System Partition Failed](/posts/drives_system_partition_failed.png)
+![Drives 3 and 4 report System Partition Failed](/posts/silent-synology/drives_system_partition_failed.png)
 **Important**: Do **not** shrink the arrays. I did so at first (`mdadm /dev/md0
 --grow -n 2`, same for `md1`) but when I later rebooted the machine, it went to
 the setup wizard instead. Fixing this was easy: I shut down the NAS, removed the
