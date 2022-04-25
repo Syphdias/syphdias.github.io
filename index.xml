@@ -1,4 +1,318 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>relg.uk</title><link>https://www.relg.uk/</link><description>Recent content on relg.uk</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Fri, 17 Dec 2021 20:06:17 +0100</lastBuildDate><atom:link href="https://www.relg.uk/index.xml" rel="self" type="application/rss+xml"/><item><title>Starting to Blog</title><link>https://www.relg.uk/posts/starting-to-blog/</link><pubDate>Fri, 17 Dec 2021 20:06:17 +0100</pubDate><guid>https://www.relg.uk/posts/starting-to-blog/</guid><description>Recently re-inspired to start to blog, I decided to open – same as Jay Faulkner – with a meta post about why, what to expect, and how I (will) do it.
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>relg.uk</title><link>https://www.relg.uk/</link><description>Recent content on relg.uk</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Mon, 25 Apr 2022 01:03:22 +0200</lastBuildDate><atom:link href="https://www.relg.uk/index.xml" rel="self" type="application/rss+xml"/><item><title>Silent Synology</title><link>https://www.relg.uk/posts/silent-synology/</link><pubDate>Mon, 25 Apr 2022 01:03:22 +0200</pubDate><guid>https://www.relg.uk/posts/silent-synology/</guid><description>I recently revived my Synology D415+ NAS from silicon death and it looks like it works fine again. When I bought it, I wanted to be able to run any docker image. Which is why I opted for Atom instead of ARM. Which is also why I upgraded RAM to 8GB. The disks basically never spun down which made it quite noisy. Now, I just want it to be silent, if not in use.</description><content:encoded><![CDATA[<p>I recently revived my Synology D415+ NAS from <a href="https://www.youtube.com/watch?v=PkZ0249t7SI&amp;t=339s">silicon death</a> and it looks like
+it works fine again. When I bought it, I wanted to be able to run any docker
+image. Which is why I opted for Atom instead of ARM. Which is also why I upgraded
+RAM to 8GB. The disks basically never spun down which made it quite noisy.
+Now, I just want it to be silent, if not in use.</p>
+<p>I initially thought I could replace the DiskStation Manager (DSM) with a proper
+Linux but from what I gathered, it is &ldquo;<a href="https://superuser.com/a/1569056">not doable without deeper knowledge</a>&rdquo;.</p>
+<h2 id="adjusting-fans">Adjusting Fans</h2>
+<p>I only inserted the first SSD so far and installed DSM 7.0 on it. The only
+audible sound was the fans spinning and I found a <a href="https://return2.net/how-to-make-synology-diskstation-fans-quieter/">guide</a> to use a custom fan
+profile to turn them off completely for low loads.</p>
+<p>Step one: Set &ldquo;Fan Speed Mode&rdquo; to &ldquo;Quiet mode&rdquo; via the GUI in &ldquo;Hardware &amp;
+Power&rdquo;. This can also be done by setting</p>
+<p>Step two: Turning off fan check to allow for 0 speed operations.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span># cat /usr/local/etc/rc.d/fan_check_disable.sh &lt;&lt;EOF
+</span></span><span style="display:flex;"><span>#!/bin/sh
+</span></span><span style="display:flex;"><span>echo 0 &gt; /sys/module/avoton_synobios/parameters/check_fan
+</span></span><span style="display:flex;"><span>EOF
+</span></span><span style="display:flex;"><span># chmod <span style="color:#ae81ff">755</span> /usr/local/etc/rc.d/fan_check_disable.sh
+</span></span></code></pre></div><p>Step three: Backup <code>/usr/syno/etc.defaults/scemd.xml</code> and <code>usr/syno/etc/scemd.xml</code>
+Step four: Adjust fan profile as described in the <a href="https://return2.net/how-to-make-synology-diskstation-fans-quieter/">guide</a> with some modifications
+in <code>/usr/syno/etc.defaults/scemd.xml</code> and <code>usr/syno/etc/scemd.xml</code>.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-diff" data-lang="diff"><span style="display:flex;"><span><span style="color:#f92672">--- /usr/syno/etc/scemd.xml_2022-04-23	2021-10-18 15:26:05.000000000 +0200
+</span></span></span><span style="display:flex;"><span><span style="color:#f92672"></span><span style="color:#a6e22e">+++ /usr/syno/etc/scemd.xml	2022-04-23 01:12:07.740595553 +0200
+</span></span></span><span style="display:flex;"><span><span style="color:#a6e22e"></span><span style="color:#75715e">@@ -14,17 +14,21 @@
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span> 		&lt;cpu_temperature fan_speed=&#34;99%40hz&#34; action=&#34;SHUTDOWN&#34;&gt;95&lt;/cpu_temperature&gt;
+</span></span><span style="display:flex;"><span> 	&lt;/fan_config&gt;
+</span></span><span style="display:flex;"><span> 	&lt;fan_config period=&#34;20&#34; threshold=&#34;6&#34; type=&#34;DUAL_MODE_LOW&#34; hibernation_speed=&#34;UNKNOWN&#34;&gt;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">-		&lt;disk_temperature fan_speed=&#34;21%40hz&#34; action=&#34;NONE&#34;&gt;0&lt;/disk_temperature&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#f92672">-		&lt;disk_temperature fan_speed=&#34;35%40hz&#34; action=&#34;NONE&#34;&gt;42&lt;/disk_temperature&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#f92672">-		&lt;disk_temperature fan_speed=&#34;50%40hz&#34; action=&#34;NONE&#34;&gt;46&lt;/disk_temperature&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#f92672">-		&lt;disk_temperature fan_speed=&#34;70%40hz&#34; action=&#34;NONE&#34;&gt;53&lt;/disk_temperature&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#f92672"></span><span style="color:#a6e22e">+		&lt;disk_temperature fan_speed=&#34;01%40hz&#34; action=&#34;NONE&#34;&gt;0&lt;/disk_temperature&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#a6e22e">+		&lt;disk_temperature fan_speed=&#34;10%40hz&#34; action=&#34;NONE&#34;&gt;41&lt;/disk_temperature&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#a6e22e">+		&lt;disk_temperature fan_speed=&#34;20%40hz&#34; action=&#34;NONE&#34;&gt;46&lt;/disk_temperature&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#a6e22e">+		&lt;disk_temperature fan_speed=&#34;35%40hz&#34; action=&#34;NONE&#34;&gt;48&lt;/disk_temperature&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#a6e22e">+		&lt;disk_temperature fan_speed=&#34;50%40hz&#34; action=&#34;NONE&#34;&gt;50&lt;/disk_temperature&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#a6e22e">+		&lt;disk_temperature fan_speed=&#34;70%40hz&#34; action=&#34;NONE&#34;&gt;54&lt;/disk_temperature&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#a6e22e"></span> 		&lt;disk_temperature fan_speed=&#34;99%40hz&#34; action=&#34;NONE&#34;&gt;58&lt;/disk_temperature&gt;
+</span></span><span style="display:flex;"><span> 		&lt;disk_temperature fan_speed=&#34;99%40hz&#34; action=&#34;SHUTDOWN&#34;&gt;61&lt;/disk_temperature&gt;
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span><span style="color:#f92672">-		&lt;cpu_temperature fan_speed=&#34;21%40hz&#34; action=&#34;NONE&#34;&gt;0&lt;/cpu_temperature&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#f92672">-		&lt;cpu_temperature fan_speed=&#34;50%40hz&#34; action=&#34;NONE&#34;&gt;50&lt;/cpu_temperature&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#f92672">-		&lt;cpu_temperature fan_speed=&#34;99%40hz&#34; action=&#34;NONE&#34;&gt;85&lt;/cpu_temperature&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#f92672">-		&lt;cpu_temperature fan_speed=&#34;99%40hz&#34; action=&#34;SHUTDOWN&#34;&gt;95&lt;/cpu_temperature&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#f92672"></span><span style="color:#a6e22e">+		&lt;cpu_temperature fan_speed=&#34;01%40hz&#34; action=&#34;NONE&#34;&gt;0&lt;/cpu_temperature&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#a6e22e">+		&lt;cpu_temperature fan_speed=&#34;10%40hz&#34; action=&#34;NONE&#34;&gt;57&lt;/cpu_temperature&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#a6e22e">+		&lt;cpu_temperature fan_speed=&#34;20%40hz&#34; action=&#34;NONE&#34;&gt;62&lt;/cpu_temperature&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#a6e22e">+		&lt;cpu_temperature fan_speed=&#34;50%40hz&#34; action=&#34;NONE&#34;&gt;65&lt;/cpu_temperature&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#a6e22e">+		&lt;cpu_temperature fan_speed=&#34;99%40hz&#34; action=&#34;NONE&#34;&gt;80&lt;/cpu_temperature&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#a6e22e">+		&lt;cpu_temperature fan_speed=&#34;99%40hz&#34; action=&#34;SHUTDOWN&#34;&gt;90&lt;/cpu_temperature&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#a6e22e"></span> 	&lt;/fan_config&gt;
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span> &lt;fan_config hw_version=&#34;Synology-DX5&#34; period=&#34;20&#34; threshold=&#34;6&#34; type=&#34;DUAL_MODE_HIGH_EBOX&#34; hibernation_speed=&#34;FULL&#34;&gt;
+</span></span></code></pre></div><p>Step five: Reboot NAS</p>
+<h2 id="adding-disks">Adding Disks</h2>
+<p>If you checked out the source for the fan profile, you might have noticed that I
+skipped something more obvious. The IronWolf drives I bought are really loud
+when spun up – louder than the stock fan configuration in fact. For quiet
+operation they need to spin down when idle.</p>
+<p>Looking at the md configuration I noticed something odd.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span># cat /proc/mdstat
+</span></span><span style="display:flex;"><span>Personalities : [raid1]
+</span></span><span style="display:flex;"><span>md2 : active raid1 sda3[0]
+</span></span><span style="display:flex;"><span>      239376512 blocks super 1.2 [1/1] [U]
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span>md1 : active raid1 sda2[0]
+</span></span><span style="display:flex;"><span>      2097088 blocks [4/1] [U___]
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span>md0 : active raid1 sda1[0]
+</span></span><span style="display:flex;"><span>      2490176 blocks [4/1] [U___]
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span>unused devices: &lt;none&gt;
+</span></span></code></pre></div><p>The first SSD (<code>sda</code>) I inserted was split into 3 partitions and turned into 3
+arrays. <code>md2</code> was the main bulk and what will is volume1. It is not mounted
+directly to <code>/volume1</code> tough, but through <code>/dev/mapper/cachedev_0</code>. I assume
+this is to enable adding a caching device later (which makes no sense in this
+case) to be more flexible.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span># df -h /volume1/
+</span></span><span style="display:flex;"><span>Filesystem              Size  Used Avail Use% Mounted on
+</span></span><span style="display:flex;"><span>/dev/mapper/cachedev_0  220G   92G  101G  48% /volume1
+</span></span><span style="display:flex;"><span># ls -l /dev/mapper/cachedev_0 /dev/md2
+</span></span><span style="display:flex;"><span>brw------- 1 root root 253, 0 Apr 23 11:58 /dev/mapper/cachedev_0
+</span></span><span style="display:flex;"><span>brw------- 1 root root   9, 2 Apr 23 11:58 /dev/md2
+</span></span><span style="display:flex;"><span># dmsetup ls --tree <span style="color:#75715e">#  ^^^^^^ notice major and minor device numbers match up</span>
+</span></span><span style="display:flex;"><span>cachedev_0 (253:0)
+</span></span><span style="display:flex;"><span> └─ (9:2)
+</span></span></code></pre></div><p><code>md0</code>(<code>sda1</code>) is used for <code>/</code> while I could not exactly figure out what
+<code>md1</code>(<code>sda2</code>) was used for – I read it was swap somewhere but I could not verify
+that, so don&rsquo;t quote me on that.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span># df -h /
+</span></span><span style="display:flex;"><span>Filesystem      Size  Used Avail Use% Mounted on
+</span></span><span style="display:flex;"><span>/dev/md0        2.3G  1.2G  1.1G  52% /
+</span></span></code></pre></div><p>Notice <code>[U___]</code> on both <code>md0</code> and <code>md1</code> and what happens after I insert a second
+SSD and configure it as Storage Pool 2 (no volume) via the GUI.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span># cat /proc/mdstat
+</span></span><span style="display:flex;"><span>Personalities : [raid1]
+</span></span><span style="display:flex;"><span>md3 : active raid1 sdb3[0]
+</span></span><span style="display:flex;"><span>      120212800 blocks super 1.2 [1/1] [U]
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span>md2 : active raid1 sda3[0]
+</span></span><span style="display:flex;"><span>      239376512 blocks super 1.2 [1/1] [U]
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span>md1 : active raid1 sdb2[4] sda2[0]
+</span></span><span style="display:flex;"><span>      2097088 blocks [4/1] [U___]
+</span></span><span style="display:flex;"><span>      [=======&gt;.............]  recovery = 37.0% (776576/2097088) finish=0.5min speed=36979K/sec
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span>md0 : active raid1 sdb1[4] sda1[0]
+</span></span><span style="display:flex;"><span>      2490176 blocks [4/1] [U___]
+</span></span><span style="display:flex;"><span>      [=====&gt;...............]  recovery = 28.7% (716928/2490176) finish=0.9min speed=32587K/sec
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span>unused devices: &lt;none&gt;
+</span></span><span style="display:flex;"><span># cat /proc/mdstat
+</span></span><span style="display:flex;"><span>Personalities : [raid1]
+</span></span><span style="display:flex;"><span>md3 : active raid1 sdb3[0]
+</span></span><span style="display:flex;"><span>      120212800 blocks super 1.2 [1/1] [U]
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span>md2 : active raid1 sda3[0]
+</span></span><span style="display:flex;"><span>      239376512 blocks super 1.2 [1/1] [U]
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span>md1 : active raid1 sdb2[1] sda2[0]
+</span></span><span style="display:flex;"><span>      2097088 blocks [4/2] [UU__]
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span>md0 : active raid1 sdb1[1] sda1[0]
+</span></span><span style="display:flex;"><span>      2490176 blocks [4/2] [UU__]
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span>unused devices: &lt;none&gt;
+</span></span></code></pre></div><p>Initializing the new disk resulted in it being split into three partitions as
+well. It added the first two partitions to the RAID1 arrays <code>md0</code> and <code>md1</code> and
+left the third partition for usage. This is kind of clever. After the initial
+array sync – took a few seconds –, I could now remove the first SSD, if I wanted
+without losing my operating system. I would still lose everything I installed on
+the volume from this disk though. Indeed, this happens to every disk I insert and
+initialize a storage pool on.</p>
+<p>I inserted my 2 10T HDDs now, and indeed they undergo the same procedure. The
+array sync took about 1-2 minutes this time and I ended up with <code>md4</code> and 2 more
+members for <code>md0</code> and <code>md1</code>.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span># cat /proc/mdstat
+</span></span><span style="display:flex;"><span>Personalities : [raid1]
+</span></span><span style="display:flex;"><span>md4 : active raid1 sdd3[1] sdc3[0]
+</span></span><span style="display:flex;"><span>      9761614848 blocks super 1.2 [2/2] [UU]
+</span></span><span style="display:flex;"><span>[...]
+</span></span><span style="display:flex;"><span>md1 : active raid1 sdd2[3] sdc2[2] sdb2[1] sda2[0]
+</span></span><span style="display:flex;"><span>      2097088 blocks [4/4] [UUUU]
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span>md0 : active raid1 sdd1[3] sdc1[2] sdb1[1] sda1[0]
+</span></span><span style="display:flex;"><span>      2490176 blocks [4/4] [UUUU]
+</span></span><span style="display:flex;"><span>[...]
+</span></span></code></pre></div><p>This is great for simplicity and redundancy. I can yank any 3 disks and my
+system keeps running. But what if anything is read or written to the system
+disk? I expect this to hinder hibernation and spin down quite a bit.</p>
+<h2 id="debugging-hdd-hibernation-part-1">Debugging HDD Hibernation Part 1</h2>
+<p>I found the tool <code>/usr/syno/sbin/syno_hibernation_debug</code> to analyse hibernation
+fails (<code>1</code> for &ldquo;Cannot Enter Hibernation&rdquo; or <code>2</code> for &ldquo;Which Interrupt
+Hibernation&rdquo;). The older one used in many forum posts was and no longer
+available (<code>syno_hibernate_debug_tool --enable 1</code>)</p>
+<p>I enabled de debug log by <a href="https://www.synology-forum.de/threads/dsm6-syno_hibernation_debug.85792/">setting some options</a> in <code>/etc/synoinfo.conf</code></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-ini" data-lang="ini"><span style="display:flex;"><span><span style="color:#a6e22e">enable_hibernation_debug</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;yes&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">hibernation_debug_level</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;1&#34;</span>
+</span></span></code></pre></div><p>I tailed <code>/var/log/hibernationFull.log</code> to get a feel what happens. I stopped
+the <code>tail</code> after I realised that reading a file from the disk I want to see idle
+might not work very well.</p>
+<p>After about 600 seconds the disks spun down only to spin up again 30 seconds later.
+I looked at the hibernation log to see what had happened.</p>
+<pre tabindex="0"><code>[Sat Apr 23 15:42:15 2022] ppid:1(systemd), pid:22779(syno_hibernatio), dirtied inode 20738 (hibernation.log) on md0
+[Sat Apr 23 15:42:15 2022] ppid:1(systemd), pid:22779(syno_hibernatio), dirtied inode 20738 (hibernation.log) on md0
+[Sat Apr 23 15:42:15 2022] ppid:1(systemd), pid:22779(syno_hibernatio), dirtied inode 20738 (hibernation.log) on md0
+[Sat Apr 23 15:42:15 2022] ppid:1(systemd), pid:22779(syno_hibernatio), dirtied inode 30536 (hibernationFull.log) on md0
+[Sat Apr 23 15:42:15 2022] ppid:1(systemd), pid:22779(syno_hibernatio), dirtied inode 30536 (hibernationFull.log) on md0
+[Sat Apr 23 15:42:15 2022] ppid:1(systemd), pid:22779(syno_hibernatio), dirtied inode 30536 (hibernationFull.log) on md0
+</code></pre><p>Huh, that&rsquo;s the pid for the <code>/usr/syno/sbin/syno_hibernation_debug</code> process. Did it wake itself up?</p>
+<p>I looked deeper into to <code>syno_hibernation_debug</code> script to find out what was
+going on. The script mainly took care of a few things:</p>
+<ul>
+<li>Reading configuration and running itself in the background if
+<code>enable_hibernation_debug=&quot;yes&quot;</code> was found and <code>hibernation_debug_level</code> was
+<code>1</code> or <code>2</code>.
+<ul>
+<li>If not, it killed the running debug process</li>
+</ul>
+</li>
+<li><code>echo 1 &gt; /proc/sys/vm/block_dump</code> if enabled and <code>echo 0 &gt; /proc/sys/vm/block_dump</code> if not</li>
+<li>it loops over <code>/sys/block/sd{a..d}/device/syno_idle_time</code> (in my case) to see
+if the idle time was below the configured standby time</li>
+<li>then it looks at <code>dmesg | tail -500</code></li>
+<li>it also writes to two log files (this should be find, it calls <code>sync</code>
+instantly afterwards and sleeps for 20s)</li>
+</ul>
+<p>This is when I gave up on the script. There really is nothing too special about
+it that I cannot do by hand without waking the disks up by myself. But I still
+have the feeling that internals might be at play that will always sync the array
+at some point in time. I don&rsquo;t want the system to be on HDDs.</p>
+<p>I tried again, this time by hand.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>echo <span style="color:#ae81ff">1</span> &gt; /proc/sys/vm/block_dump
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">while</span> sleep 1s; <span style="color:#66d9ef">do</span> cat /sys/block/sd<span style="color:#f92672">{</span>a..d<span style="color:#f92672">}</span>/device/syno_idle_time; echo; <span style="color:#66d9ef">done</span>
+</span></span></code></pre></div><p>This time is was something else.</p>
+<pre tabindex="0"><code>[Sat Apr 23 16:41:17 2022] ppid:1(systemd), pid:14381(scemd), dirtied inode 30475 (disk_overview.xml) on md0
+[Sat Apr 23 16:41:17 2022] ppid:1(systemd), pid:14381(scemd), dirtied inode 30475 (disk_overview.xml) on md0
+</code></pre><p>I wonder, if I missed this the first time, but <code>dmesg</code> does not go back far
+enough and I am not willing to spend the time again. The other reason is that I
+will definitely do something about the HDDs in the array. Simply ssh-ing to the
+NAS wakes it up – reading <code>authorized_keys</code> or something? Probably more,
+logging, etc.?</p>
+<h2 id="removing-hdds-from-array">Removing HDDs from Array</h2>
+<p>The fact that the idle times if all four disks (2xSSD, 2xHDD) were almost always
+in sync to the same value, makes me sure that with this configuration it will be
+very hard to achieve total silence with spin down or even debug it properly.</p>
+<p>I removed the HDD partitions form arrays <code>md0</code> and <code>md1</code>.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>mdadm /dev/md0 --fail /dev/sdc1
+</span></span><span style="display:flex;"><span>mdadm /dev/md0 --remove /dev/sdc1
+</span></span><span style="display:flex;"><span>mdadm /dev/md0 --fail /dev/sdd1
+</span></span><span style="display:flex;"><span>mdadm /dev/md0 --remove /dev/sdd1
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>mdadm /dev/md1 --fail /dev/sdc2
+</span></span><span style="display:flex;"><span>mdadm /dev/md1 --remove /dev/sdc2
+</span></span><span style="display:flex;"><span>mdadm /dev/md1 --fail /dev/sdd2
+</span></span><span style="display:flex;"><span>mdadm /dev/md1 --remove /dev/sdd2
+</span></span></code></pre></div><p>Resulting in this (notice that I ):</p>
+<pre tabindex="0"><code># cat /proc/mdstat
+Personalities : [raid1]
+md4 : active raid1 sdd3[1] sdc3[0]
+      9761614848 blocks super 1.2 [2/2] [UU]
+[...]
+md1 : active raid1 sdb2[1] sda2[0]
+      2097088 blocks [4/2] [UU__]
+
+md0 : active raid1 sdb1[1] sda1[0]
+      2490176 blocks [4/2] [UU__]
+[...]
+</code></pre><p>Synology did not like that.
+<img loading="lazy" src="/posts/drives_system_partition_failed.png" alt="Drives 3 and 4 report System Partition Failed"  />
+
+<strong>Important</strong>: Do <strong>not</strong> shrink the arrays. I did so at first (<code>mdadm /dev/md0 --grow -n 2</code>, same for <code>md1</code>) but when I later rebooted the machine, it went to
+the setup wizard instead. Fixing this was easy: I shut down the NAS, removed the
+HDDs and booted again. After it was done, I inserted the HDDs again, and
+assembled the array again (can be done via GUI).</p>
+<p><strong>Advice: Do not do this</strong> – unless you are sure of the consequences it might
+have. I expect this to break with OS upgrades and the like. Same for fan
+profiles.</p>
+<p>I looked at idle times again and was pleased to see that ssh-ing to the machine
+only reset idle times for the remaining SSDs in the system arrays.</p>
+<p>Sadly that did not last long since the idle time rose above 10 minutes without
+the disks spinning down. Did Synology stop tracking the disk for some reason?</p>
+<p>Time to postpone for this day.</p>
+<h2 id="debugging-hdd-hibernation-part-2">Debugging HDD Hibernation Part 2</h2>
+<p>I noticed when the HDD did spin down, looking at
+<code>/sys/block/sd{a..d}/device/syno_idle_time</code> took longer. So this does not count
+as something to interrupt the idle time but it does wake up the disk. The
+<code>syno_hibernation_debug</code> script basically only works for checking why a disk
+does not enter hibernation but not for what wakes it up, because it will wake the
+disk up itself. All debugging efforts basically lead to spin-up – the <a href="https://www.synology-wiki.de/index.php/Hibernation:_Dinge,_die_den_Disk-Spin-Down_betreffen#:~:text=Das%20Aktivieren%20des%20Logs%20kann%20den%20Hibernation%2DModus%20selbst%20ebenfalls%20beeintr%C3%A4chtigen.%20Es%20sollte%20daher%20nicht%20dauerhaft%20sondern%20nur%20zur%20Diagnose%20aktiviert%20werden!">German
+wiki page on hibernation</a> even touches on something like this briefly.</p>
+<p>New approach: I disabled all debugging measures (including hibernation log),
+closed all ssh connections, closed the webinterface and check for open
+connections to the machine (<code>lsof -i@$hostname_of_NAS</code>). Time for some series, a
+10-15 minute timer and listening if the disks spin down at some point. I left
+<code>echo 1 &gt; /proc/sys/vm/block_dump</code> to check for what woke up the drives if they
+did.</p>
+<h3 id="with-advanced-sleep">With Advanced Sleep</h3>
+<p>After waiting about ten minutes the disks spun down and the yellow LEDs went off
+(Status and disks) while the blue power LED stayed solid. The fans did not spin
+up. (There was some network activity I saw on my router at a later date, mainly
+ARP and NTP).</p>
+<p>When I connected to the web GUI after over an hour the disks spun up and the LED
+went back on. Looking at <code>dmesg</code> and searching for the HDDs I saw some activity
+I assume to be a result of waking up from deep sleep and checking if anything
+changed with the disks.</p>
+<pre tabindex="0"><code>[Sun Apr 24 17:15:56 2022] sd 5:0:0:0: [sdd] Write cache: enabled, read cache: enabled, doesn&#39;t support DPO or FUA
+[Sun Apr 24 17:16:01 2022] sd 4:0:0:0: [sdc] Write cache: disabled, read cache: enabled, doesn&#39;t support DPO or FUA
+[Sun Apr 24 17:16:02 2022] sd 5:0:0:0: [sdd] Write cache: disabled, read cache: enabled, doesn&#39;t support DPO or FUA
+[Sun Apr 24 17:16:26 2022] ppid:2(kthreadd), pid:30085(kworker/3:0), READ block 8 on sdd3 (8 sectors)
+[Sun Apr 24 17:16:26 2022] ppid:2(kthreadd), pid:30085(kworker/3:0), READ block 8 on sdc3 (8 sectors)
+[Sun Apr 24 17:16:26 2022] ppid:2(kthreadd), pid:6707(md4_raid1), WRITE block 8 on sdd3 (1 sectors)
+[Sun Apr 24 17:16:26 2022] ppid:2(kthreadd), pid:6707(md4_raid1), WRITE block 8 on sdc3 (1 sectors)
+[Sun Apr 24 17:16:26 2022] ppid:2(kthreadd), pid:6707(md4_raid1), WRITE block 8 on sdd3 (1 sectors)
+[Sun Apr 24 17:16:26 2022] ppid:2(kthreadd), pid:6707(md4_raid1), WRITE block 8 on sdc3 (1 sectors)
+</code></pre><p>I waited until the disk were silent again and the LEDs went off and connected
+via ssh – again, disk spin.</p>
+<pre tabindex="0"><code>[Sun Apr 24 17:29:55 2022] sd 4:0:0:0: [sda] Write cache: enabled, read cache: enabled, doesn&#39;t support DPO or FUA
+</code></pre><h3 id="without-advanced-sleep">Without Advanced Sleep</h3>
+<p>My hope was, by not going into deep sleep to not wake the HDDs from their
+spin-down when connecting to the GUI or via ssh. After waiting 10 minutes the
+disks spun down but all LEDs stayed on. About every 10 minutes the fans spun up
+for 2-3 minutes but the disks stayed spun down. My guess would be that not going
+into deeps sleep the CPU and maybe the SSDs needed more power wich lead to
+higher temperature and thus a higher cooling need.</p>
+<p>When I connected via ssh the HDDs spun up. There was nothing for the disks in
+<code>dmesg</code> what had accessed the disks.</p>
+<p>I waited for the disks to go silent again and tried the same with connecting via
+the GUI. Unfortunately, the disks ramped up again.</p>
+<pre tabindex="0"><code>[Sun Apr 24 18:42:59 2022] ppid:2(kthreadd), pid:30021(kworker/2:1), READ block 8 on sdb3 (8 sectors)
+[Sun Apr 24 18:42:59 2022] ppid:2(kthreadd), pid:30021(kworker/2:1), READ block 8 on sda3 (8 sectors)
+</code></pre><h2 id="hunting-ghosts">Hunting Ghosts</h2>
+<p>This is where I put down my pen for now and talk about what I have learned on
+this adventure.</p>
+<p>I guess my initial assumption that the disks didn&rsquo;t properly spin down was
+false. Maybe I had installed something that kept disks awake back then or didn&rsquo;t
+properly configure hibernate. Either way, <strong>do not assume something is (still)
+broken</strong>; verify before you invest time in debugging. For the mathematically
+inclined, for a <a href="https://en.wikipedia.org/wiki/Mathematical_induction">complete induction</a> it is essential to prove the base case
+before doing the induction step.</p>
+<p><strong>Measuring has its costs</strong> or there ain&rsquo;t no such thing as a free lunch. When
+looking at metrics, surveying the data will change the data from what it would
+have been – reminds me of the <a href="https://en.wikipedia.org/wiki/Uncertainty_principle">uncertainty principle</a>, somehow.</p>
+<h2 id="whats-next">What&rsquo;s next</h2>
+<p>I will keep my weird RAID configuration (for now), in case it did help. I am
+comfortable with dealing with potential fails that might occur.
+I moved the HDDs to the slots away from the mainboard to reduce heat radiating
+to them. I will keep the advanced/deep sleep configuration since there was no
+observable benefit from disabling deep sleep, if ssh-ing would wake up the HDDs
+anyways. I still do not understand this behavior and if anybody has an idea and
+how to fix it, please let me know.</p>
+<p>PS: I am aware that constantly spinning disks might not wear out as fast but
+this is a risk I am willing to take right now.</p>
+]]></content:encoded></item><item><title>Starting to Blog</title><link>https://www.relg.uk/posts/starting-to-blog/</link><pubDate>Fri, 17 Dec 2021 20:06:17 +0100</pubDate><guid>https://www.relg.uk/posts/starting-to-blog/</guid><description>Recently re-inspired to start to blog, I decided to open – same as Jay Faulkner – with a meta post about why, what to expect, and how I (will) do it.
 Why I Want to Blog If I start to learn a new topic, I feel like a total beginner. But the more I learn about something, the more I can draw from related topics to generate a more complete understanding of how it works.</description><content:encoded><![CDATA[<p>Recently re-inspired to start to blog, I decided to open – same as
 <a href="https://jay.jvf.cc/posts/about-itself/">Jay Faulkner</a> – with a meta post about why, what to expect, and how I (will) do
 it.</p>
