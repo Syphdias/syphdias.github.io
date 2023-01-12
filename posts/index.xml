@@ -1,4 +1,85 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>Posts on relg.uk</title><link>https://www.relg.uk/posts/</link><description>Recent content in Posts on relg.uk</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Mon, 25 Apr 2022 01:03:22 +0200</lastBuildDate><atom:link href="https://www.relg.uk/posts/index.xml" rel="self" type="application/rss+xml"/><item><title>Silent Synology</title><link>https://www.relg.uk/posts/silent-synology/</link><pubDate>Mon, 25 Apr 2022 01:03:22 +0200</pubDate><guid>https://www.relg.uk/posts/silent-synology/</guid><description>I recently revived my Synology D415+ NAS from silicon death and it looks like it works fine again. When I bought it, I wanted to be able to run any docker image. Which is why I opted for Atom instead of ARM. Which is also why I upgraded RAM to 8GB. The disks basically never spun down which made it quite noisy. Now, I just want it to be silent, if not in use.</description><content:encoded><![CDATA[<p>I recently revived my Synology D415+ NAS from <a href="https://www.youtube.com/watch?v=PkZ0249t7SI&amp;t=339s">silicon death</a> and it looks like
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>Posts on relg.uk</title><link>https://www.relg.uk/posts/</link><description>Recent content in Posts on relg.uk</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Wed, 11 Jan 2023 22:42:15 +0100</lastBuildDate><atom:link href="https://www.relg.uk/posts/index.xml" rel="self" type="application/rss+xml"/><item><title>Killing your Ceph with Backfilling</title><link>https://www.relg.uk/posts/killing-your-ceph-with-backfilling/</link><pubDate>Wed, 11 Jan 2023 22:42:15 +0100</pubDate><guid>https://www.relg.uk/posts/killing-your-ceph-with-backfilling/</guid><description>I recently was consulted on a Ceph Cluster running into nearfull and backfillfull for the first time. One Ceph OSD was utilized over 85% and another over 90%. The operators were unaware of the meaning and what to do about it, so took a look.
+Looking at ceph status and ceph df, I noticed something. Try to spot it yourself – I made it easier by removing some stuff around it:</description><content:encoded><![CDATA[<p>I recently was consulted on a Ceph Cluster running into nearfull and backfillfull
+for the first time. One Ceph OSD was utilized over 85% and another over 90%. The
+operators were unaware of the meaning and what to do about it, so took a look.</p>
+<p>Looking at <code>ceph status</code> and <code>ceph df</code>, I noticed something. Try to spot it
+yourself – I made it easier by removing some stuff around it:</p>
+<pre tabindex="0"><code>$ ceph status
+[...]
+    health: HEALTH_WARN
+            1 pools have many more objects per pg than average
+            1 backfillfull osd(s)
+            1 nearfull osd(s)
+            Low space hindering backfill (add storage if this doesn&#39;t resolve itself): 1 pg backfill_toofull
+            1 pgs not deep-scrubbed in time
+            1 pgs not scrubbed in time
+            20 pool(s) backfillfull
+
+  services:
+[...]
+    osd: 96 osds: 96 up (since 4w), 96 in (since 12M); 1 remapped pgs
+[...]
+  data:
+    volumes: 4/4 healthy
+    pools:   20 pools, 4769 pgs
+    objects: 31.90M objects, 117 TiB
+    usage:   351 TiB used, 522 TiB / 873 TiB avail
+    pgs:     299136/95689743 objects misplaced (0.313%)
+             4763 active+clean
+             5    active+clean+scrubbing+deep
+             1    active+remapped+backfill_toofull
+[...]
+# ceph df
+--- RAW STORAGE ---
+CLASS     SIZE    AVAIL     USED  RAW USED  %RAW USED
+hdd    873 TiB  522 TiB  351 TiB   351 TiB      40.19
+TOTAL  873 TiB  522 TiB  351 TiB   351 TiB      40.19
+
+--- POOLS ---
+POOL                           ID   PGS   STORED  OBJECTS     USED  %USED  MAX AVAIL
+device_health_metrics           1  4096  907 MiB      108  2.7 GiB      0     14 TiB
+rbd                             4   145   97 TiB   25.39M  290 TiB  87.43     14 TiB
+[...]
+</code></pre><p>The raw usage was only at 40%. Why would one disk contain so much data? The
+balancer was in upmap mode and active. But even with no balancer, this kind of
+miss-balancing would be extreme and very unlikely.</p>
+<p>You may have already spotted something odd in the Ceph Pool configuration. While
+<code>device_health_metrics</code> contained less than 1GiB, it had 4096 PGs. At the same
+time <code>rbd</code> contained 97TiB in just 145 PGs.</p>
+<p>145 is not just no power of two (which would usually produce a Ceph Warning),
+but also way to low for the about of data and Ceph OSD count.</p>
+<h2 id="what-does-this-mean-for-storage-distribution">What Does This Mean for Storage Distribution?</h2>
+<p>Estimating the size of one PG for pool <code>rbd</code> yields about 685GiB (97TiB/145).
+How many (average sized) PGs will lead to utilization of one disk over 85%?</p>
+<p>About 11.4 (85% * 9TiB / 685GiB)</p>
+<p>Unfortunately, not every PG is the same size. Looking at the sizes, multiple PG
+exceed 800GiB. Furthermore not every Ceph OSD receives the same amount of PGs.
+And as we will soon see the number of PGs was trying to get lower.</p>
+<h2 id="cause-and-distributing-data">Cause and Distributing Data</h2>
+<p>But what actually caused the bogus PG numbers? The answer is: The PG Autocaler.
+For some reason only <code>device_health_metrics</code> set a <code>target_size_ratio</code> to 0.1.
+This lead to the effective ratio to be 1 for this pool. Apparently the autoscaling
+assumed this would mean all data would be stored in this pool. This also
+explained why the number of PGs was not a power of two. The autoscaler set
+<code>target_pg_num</code> to 32 to reduce the pool <code>rbd</code> even more. This was why there was
+not Ceph Warning. This also means that if there were no disks were running full
+right now, it certainly would have happened in the following days.</p>
+<p>Before removing the ratio, I wanted to know what would happen. I disabled
+autoscaling (<code>ceph osd pool set noautoscale</code>) and removed the target ratio:</p>
+<pre tabindex="0"><code># ceph osd pool set device_health_metrics target_size_ratio 0
+# ceph osd pool autoscale-status
+POOL                             SIZE  TARGET SIZE  RATE  RAW CAPACITY   RATIO  TARGET RATIO  EFFECTIVE RATIO  BIAS  PG_NUM  NEW PG_NUM  AUTOSCALE  BULK
+device_health_metrics          906.5M                3.0        873.1T  0.0000                                  1.0    4096           1  on         False
+rbd                            99048G                3.0        873.1T  0.3323                                  1.0      32        1024  on         False
+[...]
+</code></pre><p>This was a lot better and we decided to re-enable autoscaling (<code>ceph osd pool unset noautoscale</code>) right away.</p>
+<p>After a few minutes the backfillfull was gone. Soon to be followed by the
+neafull. After a few days of rebalancing both pools had the proper PG count.</p>
+<p>I am not sure why the ratio was set and why it was interpreted as it was. The
+<a href="https://docs.ceph.com/en/latest/rados/operations/placement-groups/#viewing-pg-scaling-recommendations">docs</a>
+suggest this would not be a problem and I could not reproduce the behavior in a
+more recent version of Ceph. So this was potentially fixed already.</p>
+]]></content:encoded></item><item><title>Silent Synology</title><link>https://www.relg.uk/posts/silent-synology/</link><pubDate>Mon, 25 Apr 2022 01:03:22 +0200</pubDate><guid>https://www.relg.uk/posts/silent-synology/</guid><description>I recently revived my Synology D415+ NAS from silicon death and it looks like it works fine again. When I bought it, I wanted to be able to run any docker image. Which is why I opted for Atom instead of ARM. Which is also why I upgraded RAM to 8GB. The disks basically never spun down which made it quite noisy. Now, I just want it to be silent, if not in use.</description><content:encoded><![CDATA[<p>I recently revived my Synology D415+ NAS from <a href="https://www.youtube.com/watch?v=PkZ0249t7SI&amp;t=339s">silicon death</a> and it looks like
 it works fine again. When I bought it, I wanted to be able to run any docker
 image. Which is why I opted for Atom instead of ARM. Which is also why I upgraded
 RAM to 8GB. The disks basically never spun down which made it quite noisy.
