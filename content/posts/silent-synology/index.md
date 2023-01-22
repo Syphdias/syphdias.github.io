@@ -195,7 +195,7 @@ fails (`1` for "Cannot Enter Hibernation" or `2` for "Which Interrupt
 Hibernation"). The older one used in many forum posts was and no longer
 available (`syno_hibernate_debug_tool --enable 1`)
 
-I enabled de debug log by [setting some options] in `/etc/synoinfo.conf`
+I enabled the debug log by [setting some options] in `/etc/synoinfo.conf`
 ```ini
 enable_hibernation_debug="yes"
 hibernation_debug_level="1"
