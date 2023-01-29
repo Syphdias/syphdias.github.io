@@ -1,5 +1,5 @@
 ---
-title: "Killing your Ceph with Backfilling"
+title: "Killing your Ceph with Autoscaling"
 date: 2023-01-11T22:42:15+01:00
 ---
 I recently was consulted on a Ceph Cluster running into nearfull and backfillfull
@@ -74,7 +74,7 @@ And as we will soon see the number of PGs was trying to get lower.
 
 ## Cause and Distributing Data
 
-But what actually caused the bogus PG numbers? The answer is: The PG Autocaler.
+But what actually caused the bogus PG numbers? The answer is: The PG Autoscaler.
 For some reason only `device_health_metrics` set a `target_size_ratio` to 0.1.
 This lead to the effective ratio to be 1 for this pool. Apparently the autoscaling
 assumed this would mean all data would be stored in this pool. This also
@@ -98,7 +98,7 @@ This was a lot better and we decided to re-enable autoscaling (`ceph osd pool
 unset noautoscale`) right away.
 
 After a few minutes the backfillfull was gone. Soon to be followed by the
-neafull. After a few days of rebalancing both pools had the proper PG count.
+nearfull. After a few days of rebalancing both pools had the proper PG count.
 
 I am not sure why the ratio was set and why it was interpreted as it was. The
 [docs](https://docs.ceph.com/en/latest/rados/operations/placement-groups/#viewing-pg-scaling-recommendations)
