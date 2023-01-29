@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>Posts on relg.uk</title><link>https://www.relg.uk/posts/</link><description>Recent content in Posts on relg.uk</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Wed, 11 Jan 2023 22:42:15 +0100</lastBuildDate><atom:link href="https://www.relg.uk/posts/index.xml" rel="self" type="application/rss+xml"/><item><title>Killing your Ceph with Backfilling</title><link>https://www.relg.uk/posts/killing-your-ceph-with-backfilling/</link><pubDate>Wed, 11 Jan 2023 22:42:15 +0100</pubDate><guid>https://www.relg.uk/posts/killing-your-ceph-with-backfilling/</guid><description>I recently was consulted on a Ceph Cluster running into nearfull and backfillfull for the first time. One Ceph OSD was utilized over 85% and another over 90%. The operators were unaware of the meaning and what to do about it, so took a look.
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>Posts on relg.uk</title><link>https://www.relg.uk/posts/</link><description>Recent content in Posts on relg.uk</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Wed, 11 Jan 2023 22:42:15 +0100</lastBuildDate><atom:link href="https://www.relg.uk/posts/index.xml" rel="self" type="application/rss+xml"/><item><title>Killing your Ceph with Autoscaling</title><link>https://www.relg.uk/posts/killing-your-ceph-with-autoscaling/</link><pubDate>Wed, 11 Jan 2023 22:42:15 +0100</pubDate><guid>https://www.relg.uk/posts/killing-your-ceph-with-autoscaling/</guid><description>I recently was consulted on a Ceph Cluster running into nearfull and backfillfull for the first time. One Ceph OSD was utilized over 85% and another over 90%. The operators were unaware of the meaning and what to do about it, so took a look.
 Looking at ceph status and ceph df, I noticed something. Try to spot it yourself – I made it easier by removing some stuff around it:</description><content:encoded><![CDATA[<p>I recently was consulted on a Ceph Cluster running into nearfull and backfillfull
 for the first time. One Ceph OSD was utilized over 85% and another over 90%. The
 operators were unaware of the meaning and what to do about it, so took a look.</p>
@@ -56,7 +56,7 @@ How many (average sized) PGs will lead to utilization of one disk over 85%?</p>
 exceed 800GiB. Furthermore not every Ceph OSD receives the same amount of PGs.
 And as we will soon see the number of PGs was trying to get lower.</p>
 <h2 id="cause-and-distributing-data">Cause and Distributing Data</h2>
-<p>But what actually caused the bogus PG numbers? The answer is: The PG Autocaler.
+<p>But what actually caused the bogus PG numbers? The answer is: The PG Autoscaler.
 For some reason only <code>device_health_metrics</code> set a <code>target_size_ratio</code> to 0.1.
 This lead to the effective ratio to be 1 for this pool. Apparently the autoscaling
 assumed this would mean all data would be stored in this pool. This also
@@ -74,7 +74,7 @@ rbd                            99048G                3.0        873.1T  0.3323  
 [...]
 </code></pre><p>This was a lot better and we decided to re-enable autoscaling (<code>ceph osd pool unset noautoscale</code>) right away.</p>
 <p>After a few minutes the backfillfull was gone. Soon to be followed by the
-neafull. After a few days of rebalancing both pools had the proper PG count.</p>
+nearfull. After a few days of rebalancing both pools had the proper PG count.</p>
 <p>I am not sure why the ratio was set and why it was interpreted as it was. The
 <a href="https://docs.ceph.com/en/latest/rados/operations/placement-groups/#viewing-pg-scaling-recommendations">docs</a>
 suggest this would not be a problem and I could not reproduce the behavior in a
