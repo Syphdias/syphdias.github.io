@@ -19,6 +19,8 @@ params:
   socialIcons:
     - name: "github"
       url: "https://github.com/syphdias"
+    - name: "mastodon"
+      url: "https://social.linux.pizza/@syphdias"
     - name: "RSS"
       url: "index.xml"
   editPost:
