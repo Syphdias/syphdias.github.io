@@ -29,6 +29,7 @@ params:
     Text: "Suggest Changes"
   ShowReadingTime: True
   ShowFullTextinRSS: True
+  env: production
 
 menu:
   main:
