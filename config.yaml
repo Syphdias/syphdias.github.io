@@ -4,6 +4,7 @@ baseURL: "https://www.relg.uk/"
 languageCode: "en-us"
 title: "relg.uk"
 theme: "PaperMod"
+enableRobotsTXT: true
 
 outputs:
   home:
