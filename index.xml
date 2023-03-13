@@ -1,4 +1,53 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>relg.uk</title><link>https://www.relg.uk/</link><description>Recent content on relg.uk</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Wed, 11 Jan 2023 22:42:15 +0100</lastBuildDate><atom:link href="https://www.relg.uk/index.xml" rel="self" type="application/rss+xml"/><item><title>Killing your Ceph with Autoscaling</title><link>https://www.relg.uk/posts/killing-your-ceph-with-autoscaling/</link><pubDate>Wed, 11 Jan 2023 22:42:15 +0100</pubDate><guid>https://www.relg.uk/posts/killing-your-ceph-with-autoscaling/</guid><description>I recently was consulted on a Ceph Cluster running into nearfull and backfillfull for the first time. One Ceph OSD was utilized over 85% and another over 90%. The operators were unaware of the meaning and what to do about it, so took a look.
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>relg.uk</title><link>https://www.relg.uk/</link><description>Recent content on relg.uk</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Tue, 14 Mar 2023 00:00:48 +0100</lastBuildDate><atom:link href="https://www.relg.uk/index.xml" rel="self" type="application/rss+xml"/><item><title>First and Last Buisness Day of the Month With Systemd Timers</title><link>https://www.relg.uk/posts/first-and-last-buisness-day-of-the-month-with-systemd-timers/</link><pubDate>Tue, 14 Mar 2023 00:00:48 +0100</pubDate><guid>https://www.relg.uk/posts/first-and-last-buisness-day-of-the-month-with-systemd-timers/</guid><description>I recently was looking for a way to run a systemd service on the last business day of the month, but I could only find an answer for first business day of every month on Stack Overflow which was wrong. So I looked into it.
+Spoiler: This is not possible with one calendar expression.
+If you remember only one thing from this blog post, remember systemd-analyse. There are quite a few useful subcommands, e.</description><content:encoded><![CDATA[<p>I recently was looking for a way to run a systemd service on the last business
+day of the month, but I could only find an answer for first business day of
+every month on Stack Overflow which was wrong. So I looked into it.</p>
+<p>Spoiler: This is not possible with one calendar expression.</p>
+<p>If you remember only one thing from this blog post, <strong>remember
+<code>systemd-analyse</code></strong>. There are quite a few useful subcommands, e.g. <code>verify</code>.
+You should check them out, if you do not know them yet with <code>systemd-analyse -h</code>.</p>
+<p>For timers, we want <code>systemd-analyse calendar</code>.</p>
+<h2 id="first-business-day-of-the-month">First Business Day of the Month</h2>
+<p>To achieve this we can set <code>OnCalendar</code> twice in the timer unit, we do not need
+two timer units:</p>
+<pre tabindex="0"><code>[Timer]
+OnCalendar=Mon..Fri *-*-01
+OnCalendar=Mon *-*-02..03
+</code></pre><ul>
+<li><code>Mon..Fri *-*-01</code> will activate if the first day of the month is a business
+day</li>
+<li><code>Mon *-*-02..03</code> will activate if the second or third day of the month is a
+Monday. This happens if the first was a Sunday, or if the first was a Saturday
+and the second was a Sunday. There is no overlap.</li>
+</ul>
+<p>To verify this is true we can use (<code>--iterations</code> is optional but very useful):</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>systemd-analyze calendar <span style="color:#e6db74">&#39;Mon..Fri *-*-01&#39;</span> <span style="color:#e6db74">&#39;Mon *-*-02..03&#39;</span> --iterations <span style="color:#ae81ff">10</span>
+</span></span></code></pre></div><p>The output is a bit unwieldy since it treats both expressions separately and
+prints three versions of the iterations.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>systemd-analyze calendar <span style="color:#e6db74">&#39;Mon..Fri *-*-01&#39;</span> <span style="color:#e6db74">&#39;Mon *-*-02..03&#39;</span> --iterations <span style="color:#ae81ff">10</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    |grep Iteration |sort -k4
+</span></span></code></pre></div><p>This works for a English locale but it will filter out the first iteration
+because it is listed as &ldquo;Next elapse&rdquo;. The get a good overview in this case it
+suffices.</p>
+<h2 id="last-business-day-of-the-month">Last Business Day of the Month</h2>
+<p>Last day is very similar to first day, but requires dates that were introduced
+in <a href="https://github.com/systemd/systemd/blob/v233/NEWS#L174">systemd v233</a>. Again, we need two expressions:</p>
+<pre tabindex="0"><code>[Timer]
+OnCalendar=Mon..Fri *-*~01
+OnCalendar=Fri *-*~02..03
+</code></pre><ul>
+<li><code>Mon..Fri *-*~01</code> triggers if the last day of the month is a business day</li>
+<li><code>Fri *-*~02..03</code> triggers if the second to last or third to last day of the
+month was a Friday. This happens if the weekend is on the last day of the
+month.</li>
+</ul>
+<p>Verifying this works just the same:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>systemd-analyze calendar <span style="color:#e6db74">&#39;Mon..Fri *-*~01&#39;</span> <span style="color:#e6db74">&#39;Fri *-*~02..03&#39;</span> --iterations <span style="color:#ae81ff">10</span>
+</span></span></code></pre></div><p>Optionally, filter and sort with the caveats from above:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>systemd-analyze calendar <span style="color:#e6db74">&#39;Mon..Fri *-*~01&#39;</span> <span style="color:#e6db74">&#39;Fri *-*~02..03&#39;</span> --iterations <span style="color:#ae81ff">10</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    |grep Iteration |sort -k4
+</span></span></code></pre></div>]]></content:encoded></item><item><title>Killing your Ceph with Autoscaling</title><link>https://www.relg.uk/posts/killing-your-ceph-with-autoscaling/</link><pubDate>Wed, 11 Jan 2023 22:42:15 +0100</pubDate><guid>https://www.relg.uk/posts/killing-your-ceph-with-autoscaling/</guid><description>I recently was consulted on a Ceph Cluster running into nearfull and backfillfull for the first time. One Ceph OSD was utilized over 85% and another over 90%. The operators were unaware of the meaning and what to do about it, so took a look.
 Looking at ceph status and ceph df, I noticed something. Try to spot it yourself – I made it easier by removing some stuff around it:</description><content:encoded><![CDATA[<p>I recently was consulted on a Ceph Cluster running into nearfull and backfillfull
 for the first time. One Ceph OSD was utilized over 85% and another over 90%. The
 operators were unaware of the meaning and what to do about it, so took a look.</p>
