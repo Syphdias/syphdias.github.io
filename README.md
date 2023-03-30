@@ -1,8 +1,14 @@
 ## Purpose
-Generate [GitHub Pages].
+Generate [GitHub Pages] for https://www.relg.uk.
 
-## Fixing mistakes
-Feel free to open a pull request against `main`.
+## Fixing Mistakes or Adding Other Value
+Feel free to open a pull request against `main`, if you found a mistake,
+want to improve phrasing, or anything otherwise useful.
+If you don't want to do it yourself, you can open an issue in this repository. 
+
+## Interaction
+Currently, I did not implement comments. If you want to ask questions
+or interact otherwise with anything on the website, you can open an issue.
 
 ## Cloning
 Make sure to get the submodule contents or otherwise [running the
