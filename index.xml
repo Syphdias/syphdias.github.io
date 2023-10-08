@@ -1,4 +1,154 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>relg.uk</title><link>https://www.relg.uk/</link><description>Recent content on relg.uk</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Tue, 14 Mar 2023 00:00:48 +0100</lastBuildDate><atom:link href="https://www.relg.uk/index.xml" rel="self" type="application/rss+xml"/><item><title>First and Last Buisness Day of the Month With Systemd Timers</title><link>https://www.relg.uk/posts/first-and-last-buisness-day-of-the-month-with-systemd-timers/</link><pubDate>Tue, 14 Mar 2023 00:00:48 +0100</pubDate><guid>https://www.relg.uk/posts/first-and-last-buisness-day-of-the-month-with-systemd-timers/</guid><description>I recently was looking for a way to run a systemd service on the last business day of the month, but I could only find an answer for first business day of every month on Stack Overflow which was wrong. So I looked into it.
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>relg.uk</title><link>https://www.relg.uk/</link><description>Recent content on relg.uk</description><generator>Hugo -- gohugo.io</generator><language>en</language><lastBuildDate>Sun, 08 Oct 2023 17:41:04 +0200</lastBuildDate><atom:link href="https://www.relg.uk/index.xml" rel="self" type="application/rss+xml"/><item><title>They Say Don't Use the AUR</title><link>https://www.relg.uk/posts/they-say-dont-use-the-aur/</link><pubDate>Sun, 08 Oct 2023 17:41:04 +0200</pubDate><guid>https://www.relg.uk/posts/they-say-dont-use-the-aur/</guid><description>If I had to guess, why people use an Arch-based system, I would guess a big reason would be the AUR — even though it is not officially supported. It is a big part of the community and the appeal of Arch. This is a story how the AUR can break some things and the reason it is not officially supported.
+It all started with a normal update. In my case I used the AUR helper paru to update all system packages and all AUR packages.</description><content:encoded><![CDATA[<p>If I had to guess, why people use an Arch-based system, I would guess a big
+reason would be the AUR — even though it is not officially supported. It is a
+big part of the community and the appeal of Arch. This is a story how the AUR
+can break some things and the reason it is not officially supported.</p>
+<p>It all started with a normal update. In my case I used the AUR helper <a href="https://github.com/Morganamilo/paru"><code>paru</code></a>
+to update all system packages and all AUR packages. Only <code>obs-studio-tytan652</code>
+failed when trying to compile, but I rarely use OBS Studio (it will get fixed,
+eventually).</p>
+<h2 id="broken-electron-based-applications">Broken Electron-based Applications</h2>
+<p>When I tried to launch my note taking app <a href="https://obsidian.md/">Obsidian</a>, it never started. I
+dropped into a shell and tried again.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>❯ obsidian
+</span></span><span style="display:flex;"><span>/usr/lib/electron25/electron: error while loading shared libraries: libdav1d.so.6: cannot open shared object file: No such file or directory
+</span></span></code></pre></div><p>I had seem behavior like this before after an update. When you update your
+kernel and you are still running the old kernel. If the running (old) kernel
+needs to load a new module it expects the old libraries but cannot find them as
+only the new ones are available.</p>
+<p>It is generally also a bad idea to symlink libraries. If you would symlink the
+old library to the location of the old one, there is no guarantee that they are
+even remotely compatible.</p>
+<blockquote>
+<p><strong>Tip 1</strong>: Don&rsquo;t break your system with symlinking shared libraries.</p>
+</blockquote>
+<p>For the new-kernel-old-module problem a reboot usually suffices. However,
+electron apps would probably not use any kernel shared libraries. To make sure
+anyways, I did reboot.</p>
+<blockquote>
+<p><strong>Tip 2</strong>: Reboot after a upgrade if libraries cannot be found.</p>
+</blockquote>
+<p>After the reboot I was still not able to launch Obsidian or any other
+Electron-based app.</p>
+<blockquote>
+<p><strong>Electron</strong> is a framework for building desktop applications. It uses the
+Chromium browser engine and Node.js to make it easy to build cross-platform
+applications — especially, if you are already familiar with building web apps.</p>
+</blockquote>
+<h2 id="what-is-actually-missing-and-where-should-it-come-from">What is Actually Missing and Where Should it Come From?</h2>
+<p>Since the issue seems to come from [electon] and not Obsidian itself I looked at
+electron directly which yielded the same error.</p>
+<p>When looking for library dependencies for the command <code>electron</code>, there are two
+red herrings. One is, that the package <code>electron</code> is only a meta package to
+<a href="https://gitlab.archlinux.org/archlinux/packaging/packages/electron/-/blob/main/PKGBUILD?ref_type=heads">link to the latest stable version of electron</a> The second red herring is that
+<code>/usr/bin/electron25</code> is a shell script to exec <code>/usr/lib/electron25/electron</code>.
+So to check for the shared library dependencies, we can follow the trail like
+this:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>❯ which electron
+</span></span><span style="display:flex;"><span>/usr/bin/electron
+</span></span><span style="display:flex;"><span>❯ ls -l /usr/bin/electron
+</span></span><span style="display:flex;"><span>lrwxrwxrwx 1 root root 10 Jun 16 08:50 /usr/bin/electron -&gt; electron25
+</span></span><span style="display:flex;"><span>❯ file /usr/bin/electron25
+</span></span><span style="display:flex;"><span>/usr/bin/electron25: Bourne-Again shell script, ASCII text executable
+</span></span><span style="display:flex;"><span>❯ cat /usr/bin/electron25
+</span></span><span style="display:flex;"><span>#!/usr/bin/bash
+</span></span><span style="display:flex;"><span>[…snip…]
+</span></span><span style="display:flex;"><span>name=electron25
+</span></span><span style="display:flex;"><span>[…snip…]
+</span></span><span style="display:flex;"><span>exec /usr/lib/${name}/electron &#34;${flags[@]}&#34; &#34;$@&#34;
+</span></span><span style="display:flex;"><span>❯ file /usr/lib/electron25/electron
+</span></span><span style="display:flex;"><span>/usr/lib/electron25/electron: ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, for GNU/Linux 4.4.0, BuildID[sha1]=adabc98fbf2c1422ad6b6c4de371150f4fe605aa, stripped
+</span></span></code></pre></div><blockquote>
+<p><strong>Tip 3</strong>: Find the binary that is actually run.</p>
+</blockquote>
+<p>To find the libraries you can run <code>ldd</code> and filtered for the library name.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>❯ ldd /usr/lib/electron25/electron | grep libdav1d
+</span></span><span style="display:flex;"><span>	libdav1d.so.7 =&gt; /usr/lib/libdav1d.so.7 (0x00007f41ea424000)
+</span></span><span style="display:flex;"><span>❯ ls -l /usr/lib/libdav1d.so.7
+</span></span><span style="display:flex;"><span>lrwxrwxrwx 1 root root 17 Oct  4 17:21 /usr/lib/libdav1d.so.7 -&gt; libdav1d.so.7.0.0
+</span></span><span style="display:flex;"><span>❯ pacman -F /usr/lib/libdav1d.so.7
+</span></span><span style="display:flex;"><span>usr/lib/libdav1d.so.7 is owned by extra/dav1d 1.3.0-1
+</span></span></code></pre></div><p>Let&rsquo;s walk through this. The binary wants <code>libdav1d.so.7</code> and it can be found in
+<code>/usr/lib/</code>. The way this resolution from filename to path works is similar to
+how the <code>PATH</code> variable works. If you want to learn more about where libraries
+live, search for <code>LS_LIBRARY_PATH</code> and <code>ld</code>. For now, it is enough to know that
+the library is present at a know location, and points to another (existing)
+file.</p>
+<p>But actually this library is not the one the error complains about. In the error
+above it complained about <code>libdav1d.so.6</code> being absent.</p>
+<p>I reached out to the Arch Linux Mailing List which was very helpful. With the
+help of <code>lddtree</code> (from the package <code>pax-utils</code>) I could look recursively at the
+required libraries. Again, I filtered for the relevant library name but show 5
+lines above the matches to see potential parent dependencies.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>❯ lddtree /usr/lib/electron25/electron | grep -B5 libdav1d
+</span></span><span style="display:flex;"><span>    libavcodec.so.60 =&gt; /usr/lib/libavcodec.so.60
+</span></span><span style="display:flex;"><span>        libswresample.so.4 =&gt; /usr/lib/libswresample.so.4
+</span></span><span style="display:flex;"><span>            libsoxr.so.0 =&gt; /usr/lib/libsoxr.so.0
+</span></span><span style="display:flex;"><span>                libgomp.so.1 =&gt; /usr/lib/libgomp.so.1
+</span></span><span style="display:flex;"><span>        libvpx.so.8 =&gt; /usr/lib/libvpx.so.8
+</span></span><span style="display:flex;"><span>        libdav1d.so.6 =&gt; None
+</span></span><span style="display:flex;"><span>--
+</span></span><span style="display:flex;"><span>        libva-x11.so.2 =&gt; /usr/lib/libva-x11.so.2
+</span></span><span style="display:flex;"><span>            libX11-xcb.so.1 =&gt; /usr/lib/libX11-xcb.so.1
+</span></span><span style="display:flex;"><span>            libxcb-dri3.so.0 =&gt; /usr/lib/libxcb-dri3.so.0
+</span></span><span style="display:flex;"><span>        libvdpau.so.1 =&gt; /usr/lib/libvdpau.so.1
+</span></span><span style="display:flex;"><span>        libOpenCL.so.1 =&gt; /usr/lib/libOpenCL.so.1
+</span></span><span style="display:flex;"><span>    libdav1d.so.7 =&gt; /usr/lib/libdav1d.so.7
+</span></span></code></pre></div><p>This still shows <code>libdav1d.so.7</code> at the root level of the dependencies but also
+<code>libdav1d.so.6</code> as dependency of <code>libavcodec.so.60</code>. It cannot resolve the name
+to a library location so <code>None</code> gets displayed.</p>
+<p>So where is this library from?</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>❯ pacman -F libavcodec.so.60
+</span></span><span style="display:flex;"><span>extra/ffmpeg 2:6.0-12
+</span></span><span style="display:flex;"><span>    usr/lib/libavcodec.so.60
+</span></span><span style="display:flex;"><span>❯ pacman -Qi ffmpeg |grep -e Name -e Prov -e Requi
+</span></span><span style="display:flex;"><span>Name            : ffmpeg-obs
+</span></span><span style="display:flex;"><span>Provides        : ffmpeg=6.0.r12.ga6dc929  libavcodec.so=60-64  libavdevice.so=60-64  libavfilter.so=9-64  libavformat.so=60-64  libavutil.so=58-64  libpostproc.so=57-64  libswresample.so=4-64  libswscale.so=7-64
+</span></span><span style="display:flex;"><span>Required By     : chromaprint  chromium  electron25  ferdium-bin  firefox  gst-libav  krita  obs-studio-tytan652  opencv  peek  qt5-webengine  telegram-desktop  thunderbird  vlc-luajit
+</span></span></code></pre></div><p>Hm, do you notice something?</p>
+<blockquote>
+<p><strong>Tip 4</strong>: You can use <code>ldd</code>, <code>lddtree</code> (<code>pax-utils</code>) to find shared library
+dependencies that a binary need (is linked against).</p>
+</blockquote>
+<blockquote>
+<p><strong>Tip 5</strong>: You can use <code>pacman -F</code> to find the package for file and <code>pacman -Qi</code> to show information about a package, like actual name or which other
+packages require it.</p>
+</blockquote>
+<h2 id="the-culprit">The Culprit</h2>
+<p>The library is provided by <code>ffmpeg</code> a widely used library for decoding of all
+kinds of media. But the installed version is not the regular version from the
+official arch (extra) repositories but <a href="https://aur.archlinux.org/packages/ffmpeg-obs"><code>ffmpeg-obs</code></a>, a version from the AUR
+which is required by <a href="https://aur.archlinux.org/packages/obs-studio-tytan652"><code>obs-studio-tytan652</code></a>.</p>
+<p>So why is it broken? Every time a library is updated, every program that uses
+it, needs to also be rebuilt to link against the latest version. If you are
+running only official packages from Arch Linux they take good care that if one
+library gets an update every program or library using it (recursively) will be
+updated as well to reflect the changed version. This is the reason why a
+<a href="https://wiki.archlinux.org/title/system_maintenance#Partial_upgrades_are_unsupported">partially upgraded system is unsupported</a>. They cannot guarantee that the
+libraries match up.</p>
+<p>The AUR on the other hand is independent from the official package repositories.
+If something changes in the official repos, the AUR package maintainer need to
+notice and react to it. If it is a binary package, they need to rebuild it
+themselves. If it is a package built from source it needs to be rebuilt on the
+users machine as well as soon as the new libraries are available (can also be
+done through a version increment, e.g. increase the suffix to <code>-2</code>).</p>
+<p>At this point I had two options.</p>
+<ol>
+<li>Remove <code>obs-studio-tytan652</code> and switch back to <code>extra/ffmpeg</code> (the
+officially) supported version</li>
+<li>Rebuilt <code>ffmpeg-obs</code> to link against the latest version of <code>dav1d</code>.</li>
+</ol>
+<p>When I realised what had happened there was already <a href="https://aur.archlinux.org/cgit/aur.git/commit/?h=ffmpeg-obs&amp;id=8286e7cda14aaa87f9075174fa475907d99ce6bd">a new version</a> of
+<code>ffmpeg-obs</code>. But I will keep this in mind for future updates.</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>If this error had happened in an AUR package I would have known that I probably
+had to rebuild it to link to the new dependencies. In this case however, one
+package in the dependency chain was replaced by an unofficial one. Which made it
+less obvious to track down the issue.</p>
+<blockquote>
+<p><strong>Tip 6</strong>: Be weary what packages you replace with packages from the AUR.</p>
+</blockquote>
+]]></content:encoded></item><item><title>First and Last Buisness Day of the Month With Systemd Timers</title><link>https://www.relg.uk/posts/first-and-last-buisness-day-of-the-month-with-systemd-timers/</link><pubDate>Tue, 14 Mar 2023 00:00:48 +0100</pubDate><guid>https://www.relg.uk/posts/first-and-last-buisness-day-of-the-month-with-systemd-timers/</guid><description>I recently was looking for a way to run a systemd service on the last business day of the month, but I could only find an answer for first business day of every month on Stack Overflow which was wrong. So I looked into it.
 Spoiler: This is not possible with one calendar expression.
 If you remember only one thing from this blog post, remember systemd-analyse. There are quite a few useful subcommands, e.</description><content:encoded><![CDATA[<p>I recently was looking for a way to run a systemd service on the last business
 day of the month, but I could only find an answer for first business day of
