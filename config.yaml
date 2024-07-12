@@ -13,7 +13,7 @@ outputs:
     - JSON
 
 params:
-  defaultTheme: "dark"
+  defaultTheme: "auto"
   homeInfoParams:
     Title: "Hi there 👋"
     Content: "OpenSourcerer 🧙 (FOSS) who loves chocolate"
