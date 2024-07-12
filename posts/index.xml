@@ -138,7 +138,7 @@ done through a version increment, e.g. increase the suffix to <code>-2</code>).<
 officially) supported version</li>
 <li>Rebuilt <code>ffmpeg-obs</code> to link against the latest version of <code>dav1d</code>.</li>
 </ol>
-<p>When I realised what had happened there was already <a href="https://aur.archlinux.org/cgit/aur.git/commit/?h=ffmpeg-obs&amp;id=8286e7cda14aaa87f9075174fa475907d99ce6bd">a new version</a> of
+<p>When I realised what had happened there was already <a href="https://aur.archlinux.org/cgit/aur.git/commit/?h=ffmpeg-obs&id=8286e7cda14aaa87f9075174fa475907d99ce6bd">a new version</a> of
 <code>ffmpeg-obs</code>. But I will keep this in mind for future updates.</p>
 <h2 id="conclusion">Conclusion</h2>
 <p>If this error had happened in an AUR package I would have known that I probably
@@ -278,7 +278,7 @@ nearfull. After a few days of rebalancing both pools had the proper PG count.</p
 <a href="https://docs.ceph.com/en/latest/rados/operations/placement-groups/#viewing-pg-scaling-recommendations">docs</a>
 suggest this would not be a problem and I could not reproduce the behavior in a
 more recent version of Ceph. So this was potentially fixed already.</p>
-]]></content:encoded></item><item><title>Silent Synology</title><link>https://www.relg.uk/posts/silent-synology/</link><pubDate>Mon, 25 Apr 2022 01:03:22 +0200</pubDate><guid>https://www.relg.uk/posts/silent-synology/</guid><description>I recently revived my Synology D415+ NAS from silicon death and it looks like it works fine again. When I bought it, I wanted to be able to run any docker image. Which is why I opted for Atom instead of ARM. Which is also why I upgraded RAM to 8GB. The disks basically never spun down which made it quite noisy. Now, I just want it to be silent, if not in use.</description><content:encoded><![CDATA[<p>I recently revived my Synology D415+ NAS from <a href="https://www.youtube.com/watch?v=PkZ0249t7SI&amp;t=339s">silicon death</a> and it looks like
+]]></content:encoded></item><item><title>Silent Synology</title><link>https://www.relg.uk/posts/silent-synology/</link><pubDate>Mon, 25 Apr 2022 01:03:22 +0200</pubDate><guid>https://www.relg.uk/posts/silent-synology/</guid><description>I recently revived my Synology D415+ NAS from silicon death and it looks like it works fine again. When I bought it, I wanted to be able to run any docker image. Which is why I opted for Atom instead of ARM. Which is also why I upgraded RAM to 8GB. The disks basically never spun down which made it quite noisy. Now, I just want it to be silent, if not in use.</description><content:encoded><![CDATA[<p>I recently revived my Synology D415+ NAS from <a href="https://www.youtube.com/watch?v=PkZ0249t7SI&t=339s">silicon death</a> and it looks like
 it works fine again. When I bought it, I wanted to be able to run any docker
 image. Which is why I opted for Atom instead of ARM. Which is also why I upgraded
 RAM to 8GB. The disks basically never spun down which made it quite noisy.
