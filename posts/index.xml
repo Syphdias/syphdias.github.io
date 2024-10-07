@@ -1,5 +1,11 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>Posts on relg.uk</title><link>https://www.relg.uk/posts/</link><description>Recent content in Posts on relg.uk</description><generator>Hugo -- gohugo.io</generator><language>en</language><lastBuildDate>Sun, 08 Oct 2023 17:41:04 +0200</lastBuildDate><atom:link href="https://www.relg.uk/posts/index.xml" rel="self" type="application/rss+xml"/><item><title>They Say Don't Use the AUR</title><link>https://www.relg.uk/posts/they-say-dont-use-the-aur/</link><pubDate>Sun, 08 Oct 2023 17:41:04 +0200</pubDate><guid>https://www.relg.uk/posts/they-say-dont-use-the-aur/</guid><description>If I had to guess, why people use an Arch-based system, I would guess a big reason would be the AUR — even though it is not officially supported. It is a big part of the community and the appeal of Arch. This is a story how the AUR can break some things and the reason it is not officially supported.
-It all started with a normal update. In my case I used the AUR helper paru to update all system packages and all AUR packages.</description><content:encoded><![CDATA[<p>If I had to guess, why people use an Arch-based system, I would guess a big
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>Posts on relg.uk</title><link>https://www.relg.uk/posts/</link><description>Recent content in Posts on relg.uk</description><generator>Hugo -- 0.135.0</generator><language>en</language><lastBuildDate>Sun, 08 Oct 2023 17:41:04 +0200</lastBuildDate><atom:link href="https://www.relg.uk/posts/index.xml" rel="self" type="application/rss+xml"/><item><title>They Say Don't Use the AUR</title><link>https://www.relg.uk/posts/they-say-dont-use-the-aur/</link><pubDate>Sun, 08 Oct 2023 17:41:04 +0200</pubDate><guid>https://www.relg.uk/posts/they-say-dont-use-the-aur/</guid><description>&lt;p>If I had to guess, why people use an Arch-based system, I would guess a big
+reason would be the AUR — even though it is not officially supported. It is a
+big part of the community and the appeal of Arch. This is a story how the AUR
+can break some things and the reason it is not officially supported.&lt;/p>
+&lt;p>It all started with a normal update. In my case I used the AUR helper &lt;a href="https://github.com/Morganamilo/paru">&lt;code>paru&lt;/code>&lt;/a>
+to update all system packages and all AUR packages. Only &lt;code>obs-studio-tytan652&lt;/code>
+failed when trying to compile, but I rarely use OBS Studio (it will get fixed,
+eventually).&lt;/p></description><content:encoded><![CDATA[<p>If I had to guess, why people use an Arch-based system, I would guess a big
 reason would be the AUR — even though it is not officially supported. It is a
 big part of the community and the appeal of Arch. This is a story how the AUR
 can break some things and the reason it is not officially supported.</p>
@@ -148,9 +154,13 @@ less obvious to track down the issue.</p>
 <blockquote>
 <p><strong>Tip 6</strong>: Be weary what packages you replace with packages from the AUR.</p>
 </blockquote>
-]]></content:encoded></item><item><title>First and Last Buisness Day of the Month With Systemd Timers</title><link>https://www.relg.uk/posts/first-and-last-buisness-day-of-the-month-with-systemd-timers/</link><pubDate>Tue, 14 Mar 2023 00:00:48 +0100</pubDate><guid>https://www.relg.uk/posts/first-and-last-buisness-day-of-the-month-with-systemd-timers/</guid><description>I recently was looking for a way to run a systemd service on the last business day of the month, but I could only find an answer for first business day of every month on Stack Overflow which was wrong. So I looked into it.
-Spoiler: This is not possible with one calendar expression.
-If you remember only one thing from this blog post, remember systemd-analyse. There are quite a few useful subcommands, e.</description><content:encoded><![CDATA[<p>I recently was looking for a way to run a systemd service on the last business
+]]></content:encoded></item><item><title>First and Last Buisness Day of the Month With Systemd Timers</title><link>https://www.relg.uk/posts/first-and-last-buisness-day-of-the-month-with-systemd-timers/</link><pubDate>Tue, 14 Mar 2023 00:00:48 +0100</pubDate><guid>https://www.relg.uk/posts/first-and-last-buisness-day-of-the-month-with-systemd-timers/</guid><description>&lt;p>I recently was looking for a way to run a systemd service on the last business
+day of the month, but I could only find an answer for first business day of
+every month on Stack Overflow which was wrong. So I looked into it.&lt;/p>
+&lt;p>Spoiler: This is not possible with one calendar expression.&lt;/p>
+&lt;p>If you remember only one thing from this blog post, &lt;strong>remember
+&lt;code>systemd-analyse&lt;/code>&lt;/strong>. There are quite a few useful subcommands, e.g. &lt;code>verify&lt;/code>.
+You should check them out, if you do not know them yet with &lt;code>systemd-analyse -h&lt;/code>.&lt;/p></description><content:encoded><![CDATA[<p>I recently was looking for a way to run a systemd service on the last business
 day of the month, but I could only find an answer for first business day of
 every month on Stack Overflow which was wrong. So I looked into it.</p>
 <p>Spoiler: This is not possible with one calendar expression.</p>
@@ -197,8 +207,11 @@ month.</li>
 </span></span></code></pre></div><p>Optionally, filter and sort with the caveats from above:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>systemd-analyze calendar <span style="color:#e6db74">&#39;Mon..Fri *-*~01&#39;</span> <span style="color:#e6db74">&#39;Fri *-*~02..03&#39;</span> --iterations <span style="color:#ae81ff">10</span> <span style="color:#ae81ff">\
 </span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    |grep Iteration |sort -k4
-</span></span></code></pre></div>]]></content:encoded></item><item><title>Killing your Ceph with Autoscaling</title><link>https://www.relg.uk/posts/killing-your-ceph-with-autoscaling/</link><pubDate>Wed, 11 Jan 2023 22:42:15 +0100</pubDate><guid>https://www.relg.uk/posts/killing-your-ceph-with-autoscaling/</guid><description>I recently was consulted on a Ceph Cluster running into nearfull and backfillfull for the first time. One Ceph OSD was utilized over 85% and another over 90%. The operators were unaware of the meaning and what to do about it, so took a look.
-Looking at ceph status and ceph df, I noticed something. Try to spot it yourself – I made it easier by removing some stuff around it:</description><content:encoded><![CDATA[<p>I recently was consulted on a Ceph Cluster running into nearfull and backfillfull
+</span></span></code></pre></div>]]></content:encoded></item><item><title>Killing your Ceph with Autoscaling</title><link>https://www.relg.uk/posts/killing-your-ceph-with-autoscaling/</link><pubDate>Wed, 11 Jan 2023 22:42:15 +0100</pubDate><guid>https://www.relg.uk/posts/killing-your-ceph-with-autoscaling/</guid><description>&lt;p>I recently was consulted on a Ceph Cluster running into nearfull and backfillfull
+for the first time. One Ceph OSD was utilized over 85% and another over 90%. The
+operators were unaware of the meaning and what to do about it, so took a look.&lt;/p>
+&lt;p>Looking at &lt;code>ceph status&lt;/code> and &lt;code>ceph df&lt;/code>, I noticed something. Try to spot it
+yourself – I made it easier by removing some stuff around it:&lt;/p></description><content:encoded><![CDATA[<p>I recently was consulted on a Ceph Cluster running into nearfull and backfillfull
 for the first time. One Ceph OSD was utilized over 85% and another over 90%. The
 operators were unaware of the meaning and what to do about it, so took a look.</p>
 <p>Looking at <code>ceph status</code> and <code>ceph df</code>, I noticed something. Try to spot it
@@ -278,7 +291,11 @@ nearfull. After a few days of rebalancing both pools had the proper PG count.</p
 <a href="https://docs.ceph.com/en/latest/rados/operations/placement-groups/#viewing-pg-scaling-recommendations">docs</a>
 suggest this would not be a problem and I could not reproduce the behavior in a
 more recent version of Ceph. So this was potentially fixed already.</p>
-]]></content:encoded></item><item><title>Silent Synology</title><link>https://www.relg.uk/posts/silent-synology/</link><pubDate>Mon, 25 Apr 2022 01:03:22 +0200</pubDate><guid>https://www.relg.uk/posts/silent-synology/</guid><description>I recently revived my Synology D415+ NAS from silicon death and it looks like it works fine again. When I bought it, I wanted to be able to run any docker image. Which is why I opted for Atom instead of ARM. Which is also why I upgraded RAM to 8GB. The disks basically never spun down which made it quite noisy. Now, I just want it to be silent, if not in use.</description><content:encoded><![CDATA[<p>I recently revived my Synology D415+ NAS from <a href="https://www.youtube.com/watch?v=PkZ0249t7SI&t=339s">silicon death</a> and it looks like
+]]></content:encoded></item><item><title>Silent Synology</title><link>https://www.relg.uk/posts/silent-synology/</link><pubDate>Mon, 25 Apr 2022 01:03:22 +0200</pubDate><guid>https://www.relg.uk/posts/silent-synology/</guid><description>&lt;p>I recently revived my Synology D415+ NAS from &lt;a href="https://www.youtube.com/watch?v=PkZ0249t7SI&amp;t=339s">silicon death&lt;/a> and it looks like
+it works fine again. When I bought it, I wanted to be able to run any docker
+image. Which is why I opted for Atom instead of ARM. Which is also why I upgraded
+RAM to 8GB. The disks basically never spun down which made it quite noisy.
+Now, I just want it to be silent, if not in use.&lt;/p></description><content:encoded><![CDATA[<p>I recently revived my Synology D415+ NAS from <a href="https://www.youtube.com/watch?v=PkZ0249t7SI&t=339s">silicon death</a> and it looks like
 it works fine again. When I bought it, I wanted to be able to run any docker
 image. Which is why I opted for Atom instead of ARM. Which is also why I upgraded
 RAM to 8GB. The disks basically never spun down which made it quite noisy.
@@ -592,8 +609,17 @@ anyways. I still do not understand this behavior and if anybody has an idea and
 how to fix it, please let me know.</p>
 <p>PS: I am aware that constantly spinning disks might not wear out as fast but
 this is a risk I am willing to take right now.</p>
-]]></content:encoded></item><item><title>Starting to Blog</title><link>https://www.relg.uk/posts/starting-to-blog/</link><pubDate>Fri, 17 Dec 2021 20:06:17 +0100</pubDate><guid>https://www.relg.uk/posts/starting-to-blog/</guid><description>Recently re-inspired to start to blog, I decided to open – same as Jay Faulkner – with a meta post about why, what to expect, and how I (will) do it.
-Why I Want to Blog If I start to learn a new topic, I feel like a total beginner. But the more I learn about something, the more I can draw from related topics to generate a more complete understanding of how it works.</description><content:encoded><![CDATA[<p>Recently re-inspired to start to blog, I decided to open – same as
+]]></content:encoded></item><item><title>Starting to Blog</title><link>https://www.relg.uk/posts/starting-to-blog/</link><pubDate>Fri, 17 Dec 2021 20:06:17 +0100</pubDate><guid>https://www.relg.uk/posts/starting-to-blog/</guid><description>&lt;p>Recently re-inspired to start to blog, I decided to open – same as
+&lt;a href="https://jay.jvf.cc/posts/about-itself/">Jay Faulkner&lt;/a> – with a meta post about why, what to expect, and how I (will) do
+it.&lt;/p>
+&lt;h2 id="why-i-want-to-blog">Why I Want to Blog&lt;/h2>
+&lt;p>If I start to learn a new topic, I feel like a total beginner. But the more I
+learn about something, the more I can draw from related topics to generate a
+more complete understanding of how it works. We all go through this. But
+at which point is it okay to talk about it as if you were knowledgable about the
+topic? I would say, do it earlier than you think, be honest about your state of
+understanding, and do not be afraid to be wrong (as long as it does not kill
+anyone). Writing is understanding.&lt;/p></description><content:encoded><![CDATA[<p>Recently re-inspired to start to blog, I decided to open – same as
 <a href="https://jay.jvf.cc/posts/about-itself/">Jay Faulkner</a> – with a meta post about why, what to expect, and how I (will) do
 it.</p>
 <h2 id="why-i-want-to-blog">Why I Want to Blog</h2>
