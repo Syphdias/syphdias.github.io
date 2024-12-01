@@ -1,5 +1,5 @@
 ---
-title: "First and Last Buisness Day of the Month With Systemd Timers"
+title: "First and Last Business Day of the Month With Systemd Timers"
 date: 2023-03-14T00:00:48+01:00
 ---
 I recently was looking for a way to run a systemd service on the last business
