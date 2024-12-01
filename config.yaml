@@ -27,11 +27,14 @@ params:
       url: "index.xml"
   editPost:
     URL: "https://github.com/syphdias/syphdias.github.io/edit/main/content"
-    appendFilePath: True
+    appendFilePath: true
     Text: "Suggest Changes"
-  ShowReadingTime: True
-  ShowFullTextinRSS: True
+  ShowReadingTime: true
+  ShowFullTextinRSS: true
   env: production
+  social:
+    # FIXME: upstream this
+    fediverse_creator: "@syphdias@social.linux.pizza"
 
 menu:
   main:
@@ -49,5 +52,5 @@ languages:
     languageName: "English"
   de:
     weight: 2
+    # FIXME: flag not working
     languageName: ":de:"
-
