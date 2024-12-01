@@ -154,7 +154,7 @@ less obvious to track down the issue.</p>
 <blockquote>
 <p><strong>Tip 6</strong>: Be weary what packages you replace with packages from the AUR.</p>
 </blockquote>
-]]></content:encoded></item><item><title>First and Last Buisness Day of the Month With Systemd Timers</title><link>https://www.relg.uk/posts/first-and-last-buisness-day-of-the-month-with-systemd-timers/</link><pubDate>Tue, 14 Mar 2023 00:00:48 +0100</pubDate><guid>https://www.relg.uk/posts/first-and-last-buisness-day-of-the-month-with-systemd-timers/</guid><description>&lt;p>I recently was looking for a way to run a systemd service on the last business
+]]></content:encoded></item><item><title>First and Last Business Day of the Month With Systemd Timers</title><link>https://www.relg.uk/posts/first-and-last-business-day-of-the-month-with-systemd-timers/</link><pubDate>Tue, 14 Mar 2023 00:00:48 +0100</pubDate><guid>https://www.relg.uk/posts/first-and-last-business-day-of-the-month-with-systemd-timers/</guid><description>&lt;p>I recently was looking for a way to run a systemd service on the last business
 day of the month, but I could only find an answer for first business day of
 every month on Stack Overflow which was wrong. So I looked into it.&lt;/p>
 &lt;p>Spoiler: This is not possible with one calendar expression.&lt;/p>
