@@ -108,11 +108,11 @@ notice and react to it. If it is a binary package, they need to rebuild it
 themselves. If it is a package built from source it needs to be rebuilt on the
 users machine as well as soon as the new libraries are available (can also be
 done through a version increment, e.g. increase the suffix to <code>-2</code>).</p><p>At this point I had two options.</p><ol><li>Remove <code>obs-studio-tytan652</code> and switch back to <code>extra/ffmpeg</code> (the
-officially) supported version</li><li>Rebuilt <code>ffmpeg-obs</code> to link against the latest version of <code>dav1d</code>.</li></ol><p>When I realised what had happened there was already <a href="https://aur.archlinux.org/cgit/aur.git/commit/?h=ffmpeg-obs&id=8286e7cda14aaa87f9075174fa475907d99ce6bd">a new version</a> of
+officially) supported version</li><li>Rebuilt <code>ffmpeg-obs</code> to link against the latest version of <code>dav1d</code>.</li></ol><p>When I realised what had happened there was already <a href="https://aur.archlinux.org/cgit/aur.git/commit/?h=ffmpeg-obs&amp;id=8286e7cda14aaa87f9075174fa475907d99ce6bd">a new version</a> of
 <code>ffmpeg-obs</code>. But I will keep this in mind for future updates.</p><h2 id=conclusion>Conclusion<a hidden class=anchor aria-hidden=true href=#conclusion>#</a></h2><p>If this error had happened in an AUR package I would have known that I probably
 had to rebuild it to link to the new dependencies. In this case however, one
 package in the dependency chain was replaced by an unofficial one. Which made it
-less obvious to track down the issue.</p><blockquote><p><strong>Tip 6</strong>: Be weary what packages you replace with packages from the AUR.</p></blockquote></div><footer class=post-footer><ul class=post-tags></ul></footer></article></main><footer class=footer><span>&copy; 2024 <a href=https://www.relg.uk/>relg.uk</a></span> ·
+less obvious to track down the issue.</p><blockquote><p><strong>Tip 6</strong>: Be weary what packages you replace with packages from the AUR.</p></blockquote></div><footer class=post-footer><ul class=post-tags></ul></footer></article></main><footer class=footer><span>&copy; 2025 <a href=https://www.relg.uk/>relg.uk</a></span> ·
 <span>Powered by
 <a href=https://gohugo.io/ rel="noopener noreferrer" target=_blank>Hugo</a> &
         <a href=https://github.com/adityatelange/hugo-PaperMod/ rel=noopener target=_blank>PaperMod</a></span></footer><a href=#top aria-label="go to top" title="Go to Top (Alt + G)" class=top-link id=top-link accesskey=g><svg viewBox="0 0 12 6" fill="currentcolor"><path d="M12 6H0l6-6z"/></svg>
