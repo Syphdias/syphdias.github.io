@@ -1,4 +1,150 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>relg.uk</title><link>https://www.relg.uk/</link><description>Recent content on relg.uk</description><generator>Hugo -- 0.140.2</generator><language>en</language><lastBuildDate>Tue, 14 Jan 2025 23:21:30 +0100</lastBuildDate><atom:link href="https://www.relg.uk/index.xml" rel="self" type="application/rss+xml"/><item><title>GPG and Offline Keys</title><link>https://www.relg.uk/posts/gpg-and-offline-keys/</link><pubDate>Tue, 14 Jan 2025 23:21:30 +0100</pubDate><guid>https://www.relg.uk/posts/gpg-and-offline-keys/</guid><description>&lt;p>It is time again for me to renew my GPG keys and I wanted to write something
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>relg.uk</title><link>https://www.relg.uk/</link><description>Recent content on relg.uk</description><generator>Hugo -- 0.141.0</generator><language>en</language><lastBuildDate>Tue, 21 Jan 2025 19:20:34 +0100</lastBuildDate><atom:link href="https://www.relg.uk/index.xml" rel="self" type="application/rss+xml"/><item><title>Killing Ceph by Filling It</title><link>https://www.relg.uk/posts/killing-ceph-by-filling-it/</link><pubDate>Tue, 21 Jan 2025 19:20:34 +0100</pubDate><guid>https://www.relg.uk/posts/killing-ceph-by-filling-it/</guid><description>&lt;p>Apparently I do not have any customers that do not fill their Ceph clusters to
+the brim. Either because the lack capacity management, do not know their usage
+(patterns), or do not buy more storage nodes — for one or another reason.&lt;/p>
+&lt;p>This leaves me in the situation to help get the cluster in order.&lt;/p>
+&lt;h2 id="disclaimer">Disclaimer&lt;/h2>
+&lt;p>This is not a in depth guide for which steps to take exactly but a jumping off
+point to do your own reading in the Ceph documentation and acting accordingly.
+When in doubt, reach out to professionals, e.g. on the Mailing List or in IRC.&lt;/p></description><content:encoded><![CDATA[<p>Apparently I do not have any customers that do not fill their Ceph clusters to
+the brim. Either because the lack capacity management, do not know their usage
+(patterns), or do not buy more storage nodes — for one or another reason.</p>
+<p>This leaves me in the situation to help get the cluster in order.</p>
+<h2 id="disclaimer">Disclaimer</h2>
+<p>This is not a in depth guide for which steps to take exactly but a jumping off
+point to do your own reading in the Ceph documentation and acting accordingly.
+When in doubt, reach out to professionals, e.g. on the Mailing List or in IRC.</p>
+<h2 id="obvious-things-to-act-on">Obvious Things to Act on</h2>
+<p>Assuming we are not in a critical state yet, where we can no longer use the
+cluster. A few steps are fairly obvious but worth reiterating:</p>
+<ol>
+<li>Understand where data is coming from</li>
+<li>Stop the ingress of new data</li>
+<li>Delete unneeded data (also unneeded snapshots)</li>
+</ol>
+<p>After that you can take a look at how to prevent the cluster filling up in the
+mid to long term, e.g. retention mechanisms, etc.</p>
+<h2 id="cephs-balancing-mechanisms">Ceph&rsquo;s Balancing Mechanisms</h2>
+<p>If the cluster reports &ldquo;nearfull&rdquo; and &ldquo;backfillfull&rdquo; there is still time and you
+should check how well balanced your cluster is. Due to how RADOS objects are
+placed into Placement Groups (PG) using <a href="https://docs.ceph.com/en/latest/rados/operations/crush-map/">CRUSH</a> PGs can differ — in some cases
+quite widely — in size. The PGs are being assigned to Ceph OSDs and due to
+chance you end up with one Ceph OSDs containing multiple large PGs and another
+Ceph OSD containing only small PGs. In an ideal world every PG and Ceph OSD
+would have the same size and the distribution would even and would grow even.
+But, alas, PG sizes vary (especially between pools), Ceph OSDs have different
+sizes and the storage usage is unevenly distributed. To fight this, Ceph has the
+<a href="https://docs.ceph.com/en/latest/rados/operations/balancer/">Balancer Module</a> that tries to do its best to optimize a low spread of
+different usages. Make sure it is enabled and used &ldquo;upmap&rdquo;.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>ceph balancer status
+</span></span></code></pre></div><p>Another variable that can be tuned automatically by Ceph is PGs per pool. It
+takes in some variables like pool usage, target size and target ratio to
+calculate the ideal <code>pg_num</code> count for the pools it is enabled on. I recommend
+to at least put this on <code>warn</code> for every pool, if you have no reason not to.
+I did have <a href="/posts/killing-your-ceph-with-autoscaling/">some issues</a> in the past with it but nonetheless it is worth at
+least getting some advice from it.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>ceph osd pool autoscale-status
+</span></span></code></pre></div><p>The autoscaler is a good starting point especially, if you do not know the exact
+distribution of your data at the beginning. In the past PG count always had to
+be calculated manually with a target count of approximately 100 PGs per OSD.
+There is <a href="https://docs.ceph.com/en/latest/rados/operations/pgcalc/">PG Calc</a> to do this manually and it is still useful today.</p>
+<p>Ideally you know your target pool sizes or at least ratios and set the values
+accordingly for each pool and let the autoscaler do the rest. Or you can set the
+bulk flag for your data pools.</p>
+<p>It is worth checking the PG distribution yourself with <a href="https://docs.ceph.com/en/latest/rados/operations/pgcalc/">PG Calc</a> and see if you
+have enough PGs per OSD. If you have only about 50 PGs per OSD increasing the PG
+count can help achieve better balancing and faster recovery times. The reasons
+for this are fairly simple: If you have more and smaller PGs the likelihood of
+one PG getting larger is lower and the chance of multiple large PGs ending up on
+one OSD is lower as well.</p>
+<p>Looking at <code>ceph osd df</code>, and <code>ceph balancer eval</code> can give you an idea how well
+your data is distributed.</p>
+<h3 id="example-of-increasing-pg-counts">Example of Increasing PG Counts</h3>
+<p>This is from a purely replicated RADOS cluster with HDDs OSDs only (except for
+the RocksDB).</p>
+<p><strong>Before:</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>❯ ceph balancer eval
+</span></span><span style="display:flex;"><span>current cluster score 0.041072 (lower is better)
+</span></span><span style="display:flex;"><span>❯ # awk filters relevant information: min/max OSD, total, PG/OSD, and variance
+</span></span><span style="display:flex;"><span>❯ ceph osd df |awk -v min=100 -v max=0 \
+</span></span><span style="display:flex;"><span>    &#39;/VAR/ {print}
+</span></span><span style="display:flex;"><span>     /hdd/ { if($17&lt;min){min_line=$0;min=$17}; if($17&gt;max) {max_line=$0;max=$17} }
+</span></span><span style="display:flex;"><span>     /TOTAL/ { print min_line; print max_line; print &#34;Total:&#34;, sum, &#34;TiB&#34;; print &#34;PG/OSD:&#34;, pg/c }&#39;
+</span></span><span style="display:flex;"><span>ID   CLASS  WEIGHT   REWEIGHT  SIZE     RAW USE  DATA     OMAP     META     AVAIL    %USE   VAR   PGS  STATUS
+</span></span><span style="display:flex;"><span>129    hdd  9.27039   1.00000  9.3 TiB  4.2 TiB  4.0 TiB  4.6 MiB  8.8 GiB  5.1 TiB  45.30  0.73   48      up
+</span></span><span style="display:flex;"><span> 62    hdd  9.27039   1.00000  9.3 TiB  7.4 TiB  7.2 TiB  6.3 MiB   18 GiB  1.9 TiB  79.65  1.29   64      up
+</span></span><span style="display:flex;"><span>Total: 1374.5 TiB
+</span></span><span style="display:flex;"><span>PG/OSD: 57.8458
+</span></span><span style="display:flex;"><span>MIN/MAX VAR: 0.73/1.29  STDDEV: 6.47
+</span></span></code></pre></div><p>All pools have been set to <code>ceph osd pool set &lt;pool-name&gt; pg_autoscale_mode warn</code> and some of them have been assigned the bulk flag (<code>ceph osd pool set &lt;pool-name&gt; bulk true</code>) to make the autoscaler expect more data in this pool
+(usually your RBD pool, RGW data pool, or CephFS data pool).</p>
+<p><strong>After:</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>❯ ceph balancer eval
+</span></span><span style="display:flex;"><span>current cluster score 0.025255 (lower is better)
+</span></span><span style="display:flex;"><span>❯ # awk filters relevant information: min/max OSD, total, PG/OSD, and variance
+</span></span><span style="display:flex;"><span>❯ ceph osd df |awk -v min=100 -v max=0 \
+</span></span><span style="display:flex;"><span>    &#39;/VAR/ {print}
+</span></span><span style="display:flex;"><span>     /hdd/ { sum+=$7; c+=1; pg+=$19; if($17&lt;min){min_line=$0;min=$17}; if($17&gt;max) {max_line=$0;max=$17} }
+</span></span><span style="display:flex;"><span>     /TOTAL/ { print min_line; print max_line; print &#34;Total:&#34;, sum, &#34;TiB&#34;; print &#34;PG/OSD:&#34;, pg/c }&#39;
+</span></span><span style="display:flex;"><span>ID   CLASS  WEIGHT   REWEIGHT  SIZE     RAW USE  DATA     OMAP      META     AVAIL    %USE   VAR   PGS  STATUS
+</span></span><span style="display:flex;"><span> 56    hdd  9.27039   1.00000  9.3 TiB  4.9 TiB  4.7 TiB   1.2 MiB   10 GiB  4.4 TiB  52.47  0.86   76      up
+</span></span><span style="display:flex;"><span>170    hdd  9.27039   1.00000  9.3 TiB  6.5 TiB  6.3 TiB   1.1 MiB   13 GiB  2.8 TiB  70.20  1.16   98      up
+</span></span><span style="display:flex;"><span>Total: 1351.3 TiB
+</span></span><span style="display:flex;"><span>PG/OSD: 86.6458
+</span></span><span style="display:flex;"><span>MIN/MAX VAR: 0.86/1.16  STDDEV: 3.42
+</span></span></code></pre></div><p>After increasing <code>pg_num</code> for two pools and waiting for the process to finish
+(took about half a week), you can see that even though the total size did
+decreased a little bit (~20TiB) the variance shown by <code>ceph balancer eval</code> and
+the standard deviation shown by <code>ceph osd df</code> went down. This is also reflected
+by the fullest OSD being significantly lower (79% -&gt; 70%) and the least filled
+OSD being better utilised (45% -&gt; 52%).</p>
+<p>Note that you should also let the balancer do its job after increasing the PG
+count; so this could even improve a little bit.</p>
+<p><img alt="Grafana panels showing distribution spread getting narrower and PG count increasing" loading="lazy" src="/assets/ceph-distribution-1.png"></p>
+<p>You can see with more PGs the spread of OSD capacities narrows and focuses more
+on a lower number which is exactly what you want to see. Interestingly, if you
+look at the PGs per OSD you can also see that after the initial increase in the
+count of PGs the distribution of PGs decreases its spread as well. This is due
+to the balancer now getting the chance after the data splits to optimize their
+placements.</p>
+<p>Slight warning: Do not be alarmed if you get warning about (deep-)scrubs not
+being done on time. Since increasing PG count leads to lots of backfilling
+potentially over a prolonged period, Ceph prioritizes backfilling over scrubs.
+After the cluster is back to a static number of PGs and finished all backfilling
+task the number of scrubs not done on time should decrease (I would expect it to
+take about as long as the PG increase or less).</p>
+<p><img alt="Recovery during PG increase" loading="lazy" src="/assets/ceph-recovery-1.png"></p>
+<p>To improve recovery speed I set <code>ceph config set osd osd_mclock_profile high_recovery_ops</code>. To not impact daily usage too much, I set up an ad-hoc
+systemd-timers:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>systemd-run --on-calendar <span style="color:#e6db74">&#39;Mon..Fri 2024-12-* 18:00&#39;</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    ceph config set osd osd_mclock_profile high_recovery_ops
+</span></span><span style="display:flex;"><span>systemd-run --on-calendar <span style="color:#e6db74">&#39;Mon..Fri 2024-12-* 08:00&#39;</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    ceph config set osd osd_mclock_profile high_client_ops
+</span></span><span style="display:flex;"><span>systemd-run --on-calendar <span style="color:#e6db74">&#39;2025-01-01 08:00&#39;</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    ceph config set osd osd_mclock_profile high_client_ops
+</span></span></code></pre></div><p>Note: Keep in mind, that if the server these commands were run on restarts, the
+timers are gone. So make sure to check that you have indeed set the proper
+<code>osd_mclock_profile</code> after you are done. You could also remove the setting to go
+back to the balance default with <code>ceph config rm osd osd_mclock_profile</code></p>
+<h2 id="getting-your-hands-dirty">Getting Your Hands Dirty</h2>
+<p>If this is still not enough there is more you can do, by adjusting the Ceph OSD
+(re)weights.</p>
+<p>The existing scripts only looked at the current utilization and acted upon this
+information. Then you had to wait for the result and tweak another value.
+I wrote a few scripts for looking at changes during backfilling and adjusting
+based on future balance results.</p>
+<p>I created a <a href="https://github.com/Syphdias/ceph-scripts">repo</a>, if you want to check them out.</p>
+<h2 id="emergency-only">Emergency Only</h2>
+<p>If you are really in a pickle and need to get a blocked cluster running again to
+be able to rebalance (not to use it!), you can change what is recognized as a
+backfillfull or full Ceph OSD. I do not recommend this!</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>ceph osd dump | grep ratio
+</span></span><span style="display:flex;"><span>ceph osd set-backfillfull-ratio $higher
+</span></span><span style="display:flex;"><span>ceph osd set-full-ratio $more_higher
+</span></span></code></pre></div><p><strong>Also, make sure to change it back after your incident!</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>ceph osd set-backfillfull-ratio .9
+</span></span><span style="display:flex;"><span>ceph osd set-full-ratio .95
+</span></span><span style="display:flex;"><span>ceph osd dump | grep ratio
+</span></span></code></pre></div>]]></content:encoded></item><item><title>GPG and Offline Keys</title><link>https://www.relg.uk/posts/gpg-and-offline-keys/</link><pubDate>Tue, 14 Jan 2025 23:21:30 +0100</pubDate><guid>https://www.relg.uk/posts/gpg-and-offline-keys/</guid><description>&lt;p>It is time again for me to renew my GPG keys and I wanted to write something
 about GnuPG/GPG and YubiKey for a while now. I want to go over some things I
 think someone should know, if they want to use GPG and a YubiKey for GPG. If I
 think there are good resource for learning about certain aspects, I will link to
