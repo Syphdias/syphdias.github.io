@@ -5,6 +5,8 @@ languageCode: "en-us"
 title: "relg.uk"
 theme: "PaperMod"
 enableRobotsTXT: false
+enableEmoji: true
+enableInlineShortcodes: true
 
 outputs:
   home:
@@ -39,10 +41,26 @@ params:
 menu:
   main:
     - identifier: search
+      pre: >
+        <img src="/magnifying-glass-solid.svg"
+        alt="search"
+        style="height: 1em;
+               width: 1em;
+               display: inline-block;
+               margin-right: 0.3em;
+               vertical-align: middle;">
       name: search
       url: /search/
       weight: 10
     - identifier: archive
+      pre: >
+        <img src="/box-archive-solid.svg"
+        alt="archive"
+        style="height: 1em;
+               width: 1em;
+               display: inline-block;
+               margin-right: 0.3em;
+               vertical-align: middle;">
       name: archive
       url: /archives/
       weight: 20
@@ -50,7 +68,3 @@ languages:
   en:
     weight: 1
     languageName: "English"
-  de:
-    weight: 2
-    # FIXME: flag not working
-    languageName: ":de:"
