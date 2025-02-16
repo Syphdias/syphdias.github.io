@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>Posts on relg.uk</title><link>https://www.relg.uk/posts/</link><description>Recent content in Posts on relg.uk</description><generator>Hugo -- 0.142.0</generator><language>en</language><lastBuildDate>Tue, 21 Jan 2025 19:20:34 +0100</lastBuildDate><atom:link href="https://www.relg.uk/posts/index.xml" rel="self" type="application/rss+xml"/><item><title>Killing Ceph by Filling It</title><link>https://www.relg.uk/posts/killing-ceph-by-filling-it/</link><pubDate>Tue, 21 Jan 2025 19:20:34 +0100</pubDate><guid>https://www.relg.uk/posts/killing-ceph-by-filling-it/</guid><description>&lt;p>Apparently I do not have any customers that do not fill their Ceph clusters to
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>Posts on relg.uk</title><link>https://www.relg.uk/posts/</link><description>Recent content in Posts on relg.uk</description><generator>Hugo -- 0.143.1</generator><language>en</language><lastBuildDate>Tue, 21 Jan 2025 19:20:34 +0100</lastBuildDate><atom:link href="https://www.relg.uk/posts/index.xml" rel="self" type="application/rss+xml"/><item><title>Killing Ceph by Filling It</title><link>https://www.relg.uk/posts/killing-ceph-by-filling-it/</link><pubDate>Tue, 21 Jan 2025 19:20:34 +0100</pubDate><guid>https://www.relg.uk/posts/killing-ceph-by-filling-it/</guid><description>&lt;p>Apparently I do not have any customers that do not fill their Ceph clusters to
 the brim. Either because the lack capacity management, do not know their usage
 (patterns), or do not buy more storage nodes — for one or another reason.&lt;/p>
 &lt;p>This leaves me in the situation to help get the cluster in order.&lt;/p>
@@ -589,21 +589,18 @@ only the new ones are available.</p>
 old library to the location of the old one, there is no guarantee that they are
 even remotely compatible.</p>
 <blockquote>
-<p><strong>Tip 1</strong>: Don&rsquo;t break your system with symlinking shared libraries.</p>
-</blockquote>
+<p><strong>Tip 1</strong>: Don&rsquo;t break your system with symlinking shared libraries.</p></blockquote>
 <p>For the new-kernel-old-module problem a reboot usually suffices. However,
 electron apps would probably not use any kernel shared libraries. To make sure
 anyways, I did reboot.</p>
 <blockquote>
-<p><strong>Tip 2</strong>: Reboot after a upgrade if libraries cannot be found.</p>
-</blockquote>
+<p><strong>Tip 2</strong>: Reboot after a upgrade if libraries cannot be found.</p></blockquote>
 <p>After the reboot I was still not able to launch Obsidian or any other
 Electron-based app.</p>
 <blockquote>
 <p><strong>Electron</strong> is a framework for building desktop applications. It uses the
 Chromium browser engine and Node.js to make it easy to build cross-platform
-applications — especially, if you are already familiar with building web apps.</p>
-</blockquote>
+applications — especially, if you are already familiar with building web apps.</p></blockquote>
 <h2 id="what-is-actually-missing-and-where-should-it-come-from">What is Actually Missing and Where Should it Come From?</h2>
 <p>Since the issue seems to come from [electon] and not Obsidian itself I looked at
 electron directly which yielded the same error.</p>
@@ -628,8 +625,7 @@ this:</p>
 </span></span><span style="display:flex;"><span>❯ file /usr/lib/electron25/electron
 </span></span><span style="display:flex;"><span>/usr/lib/electron25/electron: ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, for GNU/Linux 4.4.0, BuildID[sha1]=adabc98fbf2c1422ad6b6c4de371150f4fe605aa, stripped
 </span></span></code></pre></div><blockquote>
-<p><strong>Tip 3</strong>: Find the binary that is actually run.</p>
-</blockquote>
+<p><strong>Tip 3</strong>: Find the binary that is actually run.</p></blockquote>
 <p>To find the libraries you can run <code>ldd</code> and filtered for the library name.</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>❯ ldd /usr/lib/electron25/electron | grep libdav1d
 </span></span><span style="display:flex;"><span>	libdav1d.so.7 =&gt; /usr/lib/libdav1d.so.7 (0x00007f41ea424000)
@@ -677,12 +673,10 @@ to a library location so <code>None</code> gets displayed.</p>
 </span></span></code></pre></div><p>Hm, do you notice something?</p>
 <blockquote>
 <p><strong>Tip 4</strong>: You can use <code>ldd</code>, <code>lddtree</code> (<code>pax-utils</code>) to find shared library
-dependencies that a binary need (is linked against).</p>
-</blockquote>
+dependencies that a binary need (is linked against).</p></blockquote>
 <blockquote>
 <p><strong>Tip 5</strong>: You can use <code>pacman -F</code> to find the package for file and <code>pacman -Qi</code> to show information about a package, like actual name or which other
-packages require it.</p>
-</blockquote>
+packages require it.</p></blockquote>
 <h2 id="the-culprit">The Culprit</h2>
 <p>The library is provided by <code>ffmpeg</code> a widely used library for decoding of all
 kinds of media. But the installed version is not the regular version from the
@@ -715,8 +709,7 @@ had to rebuild it to link to the new dependencies. In this case however, one
 package in the dependency chain was replaced by an unofficial one. Which made it
 less obvious to track down the issue.</p>
 <blockquote>
-<p><strong>Tip 6</strong>: Be weary what packages you replace with packages from the AUR.</p>
-</blockquote>
+<p><strong>Tip 6</strong>: Be weary what packages you replace with packages from the AUR.</p></blockquote>
 ]]></content:encoded></item><item><title>First and Last Business Day of the Month With Systemd Timers</title><link>https://www.relg.uk/posts/first-and-last-business-day-of-the-month-with-systemd-timers/</link><pubDate>Tue, 14 Mar 2023 00:00:48 +0100</pubDate><guid>https://www.relg.uk/posts/first-and-last-business-day-of-the-month-with-systemd-timers/</guid><description>&lt;p>I recently was looking for a way to run a systemd service on the last business
 day of the month, but I could only find an answer for first business day of
 every month on Stack Overflow which was wrong. So I looked into it.&lt;/p>
