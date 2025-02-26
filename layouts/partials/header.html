@@ -27,6 +27,20 @@
         document.body.classList.add('dark');
     }
 
+    document.addEventListener('DOMContentLoaded', function() {
+      // different logo animation behaviour depending on first load or not
+      // 1. load: relg.uk -> kugler
+      //   hover: kugler -> relg.uk
+      // n. load: relg.uk
+      //   hover: relg.uk -> kugler
+      if (!sessionStorage.getItem("nthLoad")) {
+        sessionStorage.setItem("nthLoad", "true");
+      } else {
+        document.getElementById("logo").classList.remove("logo-first-load");
+        document.getElementById("logo").classList.add("logo-nth-load");
+      }
+    })
+
 </script>
 {{- end }}
 {{- /* theme-toggle is disabled and theme is auto */}}
@@ -49,13 +63,17 @@
 
 .logo span {
     display: inline-block;
+}
+
+/* first load */
+.logo-first-load span {
     animation-delay: 1s;
 }
 @keyframes char1 { 0% { transform: translateX(0); } 100% { transform: translateX(5ch); } }
 @keyframes char2 { 0% { transform: translateX(0); } 100% { transform: translateX(3ch); } }
 @keyframes char3 { 0% { transform: translateX(0); } 100% { transform: translateX(1ch); } }
 @keyframes char4 { 0% { transform: translateX(0); } 100% { transform: translateX(-1ch); } }
-@keyframes char5 { 0% { opacity: 1; }               100% { opacity: 0; } }
+@keyframes char5 { 0% { transform: translateX(0); opacity: 1; } 100% { transform: translateX(-2ch); opacity: 0; } }
 @keyframes char6 { 0% { transform: translateX(0); } 100% { transform: translateX(-4ch); } }
 @keyframes char7 { 0% { transform: translateX(0); } 100% { transform: translateX(-6ch); } }
 
@@ -63,38 +81,49 @@
 /* 2. needs to be set via animation (not separately as animation-name, etc.)
       because if I use separte properties I cannot override them */
 /* parameters: keyframes duration timing-function duration fill-mode */
-.logo span:nth-child(1) { animation: char1 .5s ease 1s forwards; }
-.logo span:nth-child(2) { animation: char2 .5s ease 1s forwards; }
-.logo span:nth-child(3) { animation: char3 .5s ease 1s forwards; }
-.logo span:nth-child(4) { animation: char4 .5s ease 1s forwards; }
-.logo span:nth-child(5) { animation: char5 .5s ease 1s forwards; }
-.logo span:nth-child(6) { animation: char6 .5s ease 1s forwards; }
-.logo span:nth-child(7) { animation: char7 .5s ease 1s forwards; }
+.logo-first-load span:nth-child(1) { animation: char1 .5s ease 1s forwards; }
+.logo-first-load span:nth-child(2) { animation: char2 .5s ease 1s forwards; }
+.logo-first-load span:nth-child(3) { animation: char3 .5s ease 1s forwards; }
+.logo-first-load span:nth-child(4) { animation: char4 .5s ease 1s forwards; }
+.logo-first-load span:nth-child(5) { animation: char5 .5s ease 1s forwards; }
+.logo-first-load span:nth-child(6) { animation: char6 .5s ease 1s forwards; }
+.logo-first-load span:nth-child(7) { animation: char7 .5s ease 1s forwards; }
 
 @keyframes char1r { 0% { transform: translateX(5ch); }  100% { transform: translateX(0); } }
 @keyframes char2r { 0% { transform: translateX(3ch); }  100% { transform: translateX(0); } }
 @keyframes char3r { 0% { transform: translateX(1ch); }  100% { transform: translateX(0); } }
 @keyframes char4r { 0% { transform: translateX(-1ch); } 100% { transform: translateX(0); } }
-@keyframes char5r { 0% { opacity: 0; }                  100% { opacity: 1; } }
+@keyframes char5r { 0% { transform: translateX(-2ch); opacity: 0; } 100% { transform: translateX(0); opacity: 1; } }
 @keyframes char6r { 0% { transform: translateX(-4ch); } 100% { transform: translateX(0); } }
 @keyframes char7r { 0% { transform: translateX(-6ch); } 100% { transform: translateX(0); } }
 
-.logo:hover span {
+.logo-first-load:hover span {
     animation-delay: 0s;
 }
-.logo:hover span:nth-child(1) { animation-name: char1r; }
-.logo:hover span:nth-child(2) { animation-name: char2r; }
-.logo:hover span:nth-child(3) { animation-name: char3r; }
-.logo:hover span:nth-child(4) { animation-name: char4r; }
-.logo:hover span:nth-child(5) { animation-name: char5r; }
-.logo:hover span:nth-child(6) { animation-name: char6r; }
-.logo:hover span:nth-child(7) { animation-name: char7r; }
+.logo-first-load:hover span:nth-child(1) { animation-name: char1r; }
+.logo-first-load:hover span:nth-child(2) { animation-name: char2r; }
+.logo-first-load:hover span:nth-child(3) { animation-name: char3r; }
+.logo-first-load:hover span:nth-child(4) { animation-name: char4r; }
+.logo-first-load:hover span:nth-child(5) { animation-name: char5r; }
+.logo-first-load:hover span:nth-child(6) { animation-name: char6r; }
+.logo-first-load:hover span:nth-child(7) { animation-name: char7r; }
 
+/* n-th load */
+.logo-nth-load span {
+    transition: transform .5s ease, opacity .5s ease;
+}
+.logo-nth-load:hover span:nth-child(1) { transform: translateX(5ch); }
+.logo-nth-load:hover span:nth-child(2) { transform: translateX(3ch); }
+.logo-nth-load:hover span:nth-child(3) { transform: translateX(1ch); }
+.logo-nth-load:hover span:nth-child(4) { transform: translateX(-1ch); }
+.logo-nth-load:hover span:nth-child(5) { transform: translateX(-2ch); opacity: 0; }
+.logo-nth-load:hover span:nth-child(6) { transform: translateX(-4ch); }
+.logo-nth-load:hover span:nth-child(7) { transform: translateX(-6ch); }
 </style>
 
 <header class="header">
     <nav class="nav">
-        <div class="logo">
+        <div id="logo" class="logo logo-first-load">
             {{- $label_text := (site.Params.label.text | default site.Title) }}
             {{- if site.Title }}
             <a href="{{ "" | absLangURL }}" accesskey="h" title="{{ $label_text }} (Alt + H)">
