@@ -35,7 +35,6 @@ params:
   ShowFullTextinRSS: true
   env: production
   social:
-    # FIXME: upstream this
     fediverse_creator: "@syphdias@social.linux.pizza"
 
 menu:
