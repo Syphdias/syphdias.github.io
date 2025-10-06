@@ -1,11 +1,11 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>Posts on relg.uk</title><link>https://www.relg.uk/posts/</link><description>Recent content in Posts on relg.uk</description><generator>Hugo -- 0.146.7</generator><language>en</language><lastBuildDate>Tue, 21 Jan 2025 19:20:34 +0100</lastBuildDate><atom:link href="https://www.relg.uk/posts/index.xml" rel="self" type="application/rss+xml"/><item><title>Killing Ceph by Filling It</title><link>https://www.relg.uk/posts/killing-ceph-by-filling-it/</link><pubDate>Tue, 21 Jan 2025 19:20:34 +0100</pubDate><guid>https://www.relg.uk/posts/killing-ceph-by-filling-it/</guid><description>&lt;p>Apparently I do not have any customers that do not fill their Ceph clusters to
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>Posts on relg.uk</title><link>https://www.relg.uk/posts/</link><description>Recent content in Posts on relg.uk</description><generator>Hugo -- 0.151.0</generator><language>en</language><lastBuildDate>Tue, 21 Jan 2025 19:20:34 +0100</lastBuildDate><atom:link href="https://www.relg.uk/posts/index.xml" rel="self" type="application/rss+xml"/><item><title>Killing Ceph by Filling It</title><link>https://www.relg.uk/posts/killing-ceph-by-filling-it/</link><pubDate>Tue, 21 Jan 2025 19:20:34 +0100</pubDate><guid>https://www.relg.uk/posts/killing-ceph-by-filling-it/</guid><description>&lt;p&gt;Apparently I do not have any customers that do not fill their Ceph clusters to
 the brim. Either because the lack capacity management, do not know their usage
-(patterns), or do not buy more storage nodes — for one or another reason.&lt;/p>
-&lt;p>This leaves me in the situation to help get the cluster in order.&lt;/p>
-&lt;h2 id="disclaimer">Disclaimer&lt;/h2>
-&lt;p>This is not a in depth guide for which steps to take exactly but a jumping off
+(patterns), or do not buy more storage nodes — for one or another reason.&lt;/p&gt;
+&lt;p&gt;This leaves me in the situation to help get the cluster in order.&lt;/p&gt;
+&lt;h2 id="disclaimer"&gt;Disclaimer&lt;/h2&gt;
+&lt;p&gt;This is not a in depth guide for which steps to take exactly but a jumping off
 point to do your own reading in the Ceph documentation and acting accordingly.
-When in doubt, reach out to professionals, e.g. on the Mailing List or in IRC.&lt;/p></description><content:encoded><![CDATA[<p>Apparently I do not have any customers that do not fill their Ceph clusters to
+When in doubt, reach out to professionals, e.g. on the Mailing List or in IRC.&lt;/p&gt;</description><content:encoded><![CDATA[<p>Apparently I do not have any customers that do not fill their Ceph clusters to
 the brim. Either because the lack capacity management, do not know their usage
 (patterns), or do not buy more storage nodes — for one or another reason.</p>
 <p>This leaves me in the situation to help get the cluster in order.</p>
@@ -45,8 +45,9 @@ least getting some advice from it.</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>ceph osd pool autoscale-status
 </span></span></code></pre></div><p>The autoscaler is a good starting point especially, if you do not know the exact
 distribution of your data at the beginning. In the past PG count always had to
-be calculated manually with a target count of approximately 100 PGs per OSD.
-There is <a href="https://docs.ceph.com/en/latest/rados/operations/pgcalc/">PG Calc</a> to do this manually and it is still useful today.</p>
+be calculated manually with a target count of approximately (or at least) 100
+PGs per OSD. There is <a href="https://docs.ceph.com/en/latest/rados/operations/pgcalc/">PG Calc</a> to do this manually and it is still useful
+today.</p>
 <p>Ideally you know your target pool sizes or at least ratios and set the values
 accordingly for each pool and let the autoscaler do the rest. Or you can set the
 bulk flag for your data pools.</p>
@@ -58,6 +59,28 @@ one PG getting larger is lower and the chance of multiple large PGs ending up on
 one OSD is lower as well.</p>
 <p>Looking at <code>ceph osd df</code>, and <code>ceph balancer eval</code> can give you an idea how well
 your data is distributed.</p>
+<h3 id="fixing-wrong-defaults">Fixing &ldquo;Wrong&rdquo; Defaults</h3>
+<p>There is one gotcha when doing manual PG calculations and comparing them to what
+the autoscaler wants to do. While the autoscaler aims for 100 PGs per Ceph OSD
+by default, it also errs on the side of caution and keeps PG counts usually to
+low.</p>
+<p>While there are <a href="https://docs.ceph.com/en/reef/rados/operations/placement-groups/#factors-relevant-to-specifying-pg-num">downsides to higher PG count</a> (cpu, memory), most modern,
+non-tiny clusters should aim for a 100 to 200 PG per Ceph OSD. The <a href="https://docs.ceph.com/en/reef/rados/operations/placement-groups/#automated-scaling">official
+documentation recommends</a> to set <code>mon_target_pg_per_osd</code> &ldquo;for all but the very
+smallest deployments&rdquo; to <code>200</code>. It does not specify what constitutes &ldquo;very
+smallest&rdquo; but I would say, if you have more than 50 Ceph OSDs you are not longer
+operating a &ldquo;very small&rdquo; deployment but a &ldquo;quite small&rdquo; deployment.</p>
+<p>From the same passage of the documentation we get: &ldquo;A value above 500 may result
+in excessive peering traffic and RAM usage.&rdquo;. To prevent this from happening we
+can limit <code>mon_max_pg_per_osd</code> to 500, 400, or 300 — what ever you are most
+comfortable with.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>ceph config set global mon_target_pg_per_osd <span style="color:#ae81ff">200</span>
+</span></span><span style="display:flex;"><span>ceph config set global mon_max_pg_per_osd <span style="color:#ae81ff">500</span>
+</span></span></code></pre></div><blockquote>
+<p>Note: The examples below still had these settings at their default. :(</p></blockquote>
+<p>If you ask me, the values from the documentation should be the default with the
+advice to lower these values. Though looking at <a href="https://telemetry-public.ceph.com/d/CMhSOJ3Zz/capacity-density?orgId=1">public telemetry data</a> — maybe
+not.</p>
 <h3 id="example-of-increasing-pg-counts">Example of Increasing PG Counts</h3>
 <p>This is from a purely replicated RADOS cluster with HDDs OSDs only (except for
 the RocksDB).</p>
@@ -144,35 +167,35 @@ backfillfull or full Ceph OSD. I do not recommend this!</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>ceph osd set-backfillfull-ratio .9
 </span></span><span style="display:flex;"><span>ceph osd set-full-ratio .95
 </span></span><span style="display:flex;"><span>ceph osd dump | grep ratio
-</span></span></code></pre></div>]]></content:encoded></item><item><title>GPG and Offline Keys</title><link>https://www.relg.uk/posts/gpg-and-offline-keys/</link><pubDate>Tue, 14 Jan 2025 23:21:30 +0100</pubDate><guid>https://www.relg.uk/posts/gpg-and-offline-keys/</guid><description>&lt;p>It is time again for me to renew my GPG keys and I wanted to write something
+</span></span></code></pre></div>]]></content:encoded></item><item><title>GPG and Offline Keys</title><link>https://www.relg.uk/posts/gpg-and-offline-keys/</link><pubDate>Tue, 14 Jan 2025 23:21:30 +0100</pubDate><guid>https://www.relg.uk/posts/gpg-and-offline-keys/</guid><description>&lt;p&gt;It is time again for me to renew my GPG keys and I wanted to write something
 about GnuPG/GPG and YubiKey for a while now. I want to go over some things I
 think someone should know, if they want to use GPG and a YubiKey for GPG. If I
 think there are good resource for learning about certain aspects, I will link to
-them.&lt;/p>
-&lt;h2 id="what-this-is-not">What this is not&lt;/h2>
-&lt;ul>
-&lt;li>This does not explain basics of cryptography. I assume you know about
-asymmetric and symmetric encryption, and signing (basically &lt;a href="https://blog.koehntopp.info/2018/03/04/hashes-in-structures.html">reverse
-asymmetric encryption of the contents hash&lt;/a>). It also is not a guide on how to
+them.&lt;/p&gt;
+&lt;h2 id="what-this-is-not"&gt;What this is not&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;This does not explain basics of cryptography. I assume you know about
+asymmetric and symmetric encryption, and signing (basically &lt;a href="https://blog.koehntopp.info/2018/03/04/hashes-in-structures.html"&gt;reverse
+asymmetric encryption of the contents hash&lt;/a&gt;). It also is not a guide on how to
 use GPG on a normal day. You probably already know how to that. Take a look at
-signing your git commits and using it for SSH authentication!&lt;/li>
-&lt;li>This does not recommend any hardware.&lt;/li>
-&lt;li>This does not take a look at signing git commits with SSH (though that is a
-interesting topic imo).&lt;/li>
-&lt;li>This does not go over installation of GPG or tooling around using a smartcard
-(e.g. &lt;code>pcscd&lt;/code> and &lt;code>pcsc_scan&lt;/code>, &lt;code>ykman&lt;/code>, &lt;code>kdf-setup&lt;/code>, etc.) — maybe later.&lt;/li>
-&lt;li>This also does not go over thread modeling. You need to know if an
-intelligence service is after you, if data corruption is a risk, etc.&lt;/li>
-&lt;/ul>
-&lt;h2 id="be-serious">Be Serious&lt;/h2>
-&lt;p>If you are serious about using GPG, you should understand more than just how to
+signing your git commits and using it for SSH authentication!&lt;/li&gt;
+&lt;li&gt;This does not recommend any hardware.&lt;/li&gt;
+&lt;li&gt;This does not take a look at signing git commits with SSH (though that is a
+interesting topic imo).&lt;/li&gt;
+&lt;li&gt;This does not go over installation of GPG or tooling around using a smartcard
+(e.g. &lt;code&gt;pcscd&lt;/code&gt; and &lt;code&gt;pcsc_scan&lt;/code&gt;, &lt;code&gt;ykman&lt;/code&gt;, &lt;code&gt;kdf-setup&lt;/code&gt;, etc.) — maybe later.&lt;/li&gt;
+&lt;li&gt;This also does not go over thread modeling. You need to know if an
+intelligence service is after you, if data corruption is a risk, etc.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="be-serious"&gt;Be Serious&lt;/h2&gt;
+&lt;p&gt;If you are serious about using GPG, you should understand more than just how to
 give your key to an application to use it to sign/(de)crypt for you. I would
 recommend you never set the expiration of more than one year. Get comfortable
-with generating and renewing GPG keys. &lt;em>Never&lt;/em> create a non-expiring key; this
+with generating and renewing GPG keys. &lt;em&gt;Never&lt;/em&gt; create a non-expiring key; this
 is because in case you loose access to the secret key (e.g. forgetting the
-password), the key will still be invalidated eventually.&lt;br>
+password), the key will still be invalidated eventually.&lt;br&gt;
 I would also recommend understanding more about the anatomy and though behind
-the workings of GPG. I really liked Neal Walfield&amp;rsquo;s &lt;a href="https://begriffs.com/posts/2016-11-05-advanced-intro-gnupg.html">Advanced Intro to GnuPG&lt;/a>.&lt;/p></description><content:encoded><![CDATA[<p>It is time again for me to renew my GPG keys and I wanted to write something
+the workings of GPG. I really liked Neal Walfield&amp;rsquo;s &lt;a href="https://begriffs.com/posts/2016-11-05-advanced-intro-gnupg.html"&gt;Advanced Intro to GnuPG&lt;/a&gt;.&lt;/p&gt;</description><content:encoded><![CDATA[<p>It is time again for me to renew my GPG keys and I wanted to write something
 about GnuPG/GPG and YubiKey for a while now. I want to go over some things I
 think someone should know, if they want to use GPG and a YubiKey for GPG. If I
 think there are good resource for learning about certain aspects, I will link to
@@ -561,14 +584,14 @@ keyserver hkps://keys.openpgp.org:443/
 another day, another post.</p>
 <p>I can recommend drduh&rsquo;s <a href="https://github.com/drduh/YubiKey-Guide">YubiKey-Guide</a>. If you want to use a YubiKey at least
 give it a skim. And if you got your YubiKey, read it whole.</p>
-]]></content:encoded></item><item><title>They Say Don't Use the AUR</title><link>https://www.relg.uk/posts/they-say-dont-use-the-aur/</link><pubDate>Sun, 08 Oct 2023 17:41:04 +0200</pubDate><guid>https://www.relg.uk/posts/they-say-dont-use-the-aur/</guid><description>&lt;p>If I had to guess, why people use an Arch-based system, I would guess a big
+]]></content:encoded></item><item><title>They Say Don't Use the AUR</title><link>https://www.relg.uk/posts/they-say-dont-use-the-aur/</link><pubDate>Sun, 08 Oct 2023 17:41:04 +0200</pubDate><guid>https://www.relg.uk/posts/they-say-dont-use-the-aur/</guid><description>&lt;p&gt;If I had to guess, why people use an Arch-based system, I would guess a big
 reason would be the AUR — even though it is not officially supported. It is a
 big part of the community and the appeal of Arch. This is a story how the AUR
-can break some things and the reason it is not officially supported.&lt;/p>
-&lt;p>It all started with a normal update. In my case I used the AUR helper &lt;a href="https://github.com/Morganamilo/paru">&lt;code>paru&lt;/code>&lt;/a>
-to update all system packages and all AUR packages. Only &lt;code>obs-studio-tytan652&lt;/code>
+can break some things and the reason it is not officially supported.&lt;/p&gt;
+&lt;p&gt;It all started with a normal update. In my case I used the AUR helper &lt;a href="https://github.com/Morganamilo/paru"&gt;&lt;code&gt;paru&lt;/code&gt;&lt;/a&gt;
+to update all system packages and all AUR packages. Only &lt;code&gt;obs-studio-tytan652&lt;/code&gt;
 failed when trying to compile, but I rarely use OBS Studio (it will get fixed,
-eventually).&lt;/p></description><content:encoded><![CDATA[<p>If I had to guess, why people use an Arch-based system, I would guess a big
+eventually).&lt;/p&gt;</description><content:encoded><![CDATA[<p>If I had to guess, why people use an Arch-based system, I would guess a big
 reason would be the AUR — even though it is not officially supported. It is a
 big part of the community and the appeal of Arch. This is a story how the AUR
 can break some things and the reason it is not officially supported.</p>
@@ -710,13 +733,13 @@ package in the dependency chain was replaced by an unofficial one. Which made it
 less obvious to track down the issue.</p>
 <blockquote>
 <p><strong>Tip 6</strong>: Be weary what packages you replace with packages from the AUR.</p></blockquote>
-]]></content:encoded></item><item><title>First and Last Business Day of the Month With Systemd Timers</title><link>https://www.relg.uk/posts/first-and-last-business-day-of-the-month-with-systemd-timers/</link><pubDate>Tue, 14 Mar 2023 00:00:48 +0100</pubDate><guid>https://www.relg.uk/posts/first-and-last-business-day-of-the-month-with-systemd-timers/</guid><description>&lt;p>I recently was looking for a way to run a systemd service on the last business
+]]></content:encoded></item><item><title>First and Last Business Day of the Month With Systemd Timers</title><link>https://www.relg.uk/posts/first-and-last-business-day-of-the-month-with-systemd-timers/</link><pubDate>Tue, 14 Mar 2023 00:00:48 +0100</pubDate><guid>https://www.relg.uk/posts/first-and-last-business-day-of-the-month-with-systemd-timers/</guid><description>&lt;p&gt;I recently was looking for a way to run a systemd service on the last business
 day of the month, but I could only find an answer for first business day of
-every month on Stack Overflow which was wrong. So I looked into it.&lt;/p>
-&lt;p>Spoiler: This is not possible with one calendar expression.&lt;/p>
-&lt;p>If you remember only one thing from this blog post, &lt;strong>remember
-&lt;code>systemd-analyse&lt;/code>&lt;/strong>. There are quite a few useful subcommands, e.g. &lt;code>verify&lt;/code>.
-You should check them out, if you do not know them yet with &lt;code>systemd-analyse -h&lt;/code>.&lt;/p></description><content:encoded><![CDATA[<p>I recently was looking for a way to run a systemd service on the last business
+every month on Stack Overflow which was wrong. So I looked into it.&lt;/p&gt;
+&lt;p&gt;Spoiler: This is not possible with one calendar expression.&lt;/p&gt;
+&lt;p&gt;If you remember only one thing from this blog post, &lt;strong&gt;remember
+&lt;code&gt;systemd-analyse&lt;/code&gt;&lt;/strong&gt;. There are quite a few useful subcommands, e.g. &lt;code&gt;verify&lt;/code&gt;.
+You should check them out, if you do not know them yet with &lt;code&gt;systemd-analyse -h&lt;/code&gt;.&lt;/p&gt;</description><content:encoded><![CDATA[<p>I recently was looking for a way to run a systemd service on the last business
 day of the month, but I could only find an answer for first business day of
 every month on Stack Overflow which was wrong. So I looked into it.</p>
 <p>Spoiler: This is not possible with one calendar expression.</p>
@@ -763,11 +786,11 @@ month.</li>
 </span></span></code></pre></div><p>Optionally, filter and sort with the caveats from above:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>systemd-analyze calendar <span style="color:#e6db74">&#39;Mon..Fri *-*~01&#39;</span> <span style="color:#e6db74">&#39;Fri *-*~02..03&#39;</span> --iterations <span style="color:#ae81ff">10</span> <span style="color:#ae81ff">\
 </span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    |grep Iteration |sort -k4
-</span></span></code></pre></div>]]></content:encoded></item><item><title>Killing your Ceph with Autoscaling</title><link>https://www.relg.uk/posts/killing-your-ceph-with-autoscaling/</link><pubDate>Wed, 11 Jan 2023 22:42:15 +0100</pubDate><guid>https://www.relg.uk/posts/killing-your-ceph-with-autoscaling/</guid><description>&lt;p>I recently was consulted on a Ceph Cluster running into nearfull and backfillfull
+</span></span></code></pre></div>]]></content:encoded></item><item><title>Killing your Ceph with Autoscaling</title><link>https://www.relg.uk/posts/killing-your-ceph-with-autoscaling/</link><pubDate>Wed, 11 Jan 2023 22:42:15 +0100</pubDate><guid>https://www.relg.uk/posts/killing-your-ceph-with-autoscaling/</guid><description>&lt;p&gt;I recently was consulted on a Ceph Cluster running into nearfull and backfillfull
 for the first time. One Ceph OSD was utilized over 85% and another over 90%. The
-operators were unaware of the meaning and what to do about it, so took a look.&lt;/p>
-&lt;p>Looking at &lt;code>ceph status&lt;/code> and &lt;code>ceph df&lt;/code>, I noticed something. Try to spot it
-yourself – I made it easier by removing some stuff around it:&lt;/p></description><content:encoded><![CDATA[<p>I recently was consulted on a Ceph Cluster running into nearfull and backfillfull
+operators were unaware of the meaning and what to do about it, so took a look.&lt;/p&gt;
+&lt;p&gt;Looking at &lt;code&gt;ceph status&lt;/code&gt; and &lt;code&gt;ceph df&lt;/code&gt;, I noticed something. Try to spot it
+yourself – I made it easier by removing some stuff around it:&lt;/p&gt;</description><content:encoded><![CDATA[<p>I recently was consulted on a Ceph Cluster running into nearfull and backfillfull
 for the first time. One Ceph OSD was utilized over 85% and another over 90%. The
 operators were unaware of the meaning and what to do about it, so took a look.</p>
 <p>Looking at <code>ceph status</code> and <code>ceph df</code>, I noticed something. Try to spot it
@@ -847,11 +870,11 @@ nearfull. After a few days of rebalancing both pools had the proper PG count.</p
 <a href="https://docs.ceph.com/en/latest/rados/operations/placement-groups/#viewing-pg-scaling-recommendations">docs</a>
 suggest this would not be a problem and I could not reproduce the behavior in a
 more recent version of Ceph. So this was potentially fixed already.</p>
-]]></content:encoded></item><item><title>Silent Synology</title><link>https://www.relg.uk/posts/silent-synology/</link><pubDate>Mon, 25 Apr 2022 01:03:22 +0200</pubDate><guid>https://www.relg.uk/posts/silent-synology/</guid><description>&lt;p>I recently revived my Synology D415+ NAS from &lt;a href="https://www.youtube.com/watch?v=PkZ0249t7SI&amp;amp;t=339s">silicon death&lt;/a> and it looks like
+]]></content:encoded></item><item><title>Silent Synology</title><link>https://www.relg.uk/posts/silent-synology/</link><pubDate>Mon, 25 Apr 2022 01:03:22 +0200</pubDate><guid>https://www.relg.uk/posts/silent-synology/</guid><description>&lt;p&gt;I recently revived my Synology D415+ NAS from &lt;a href="https://www.youtube.com/watch?v=PkZ0249t7SI&amp;amp;t=339s"&gt;silicon death&lt;/a&gt; and it looks like
 it works fine again. When I bought it, I wanted to be able to run any docker
 image. Which is why I opted for Atom instead of ARM. Which is also why I upgraded
 RAM to 8GB. The disks basically never spun down which made it quite noisy.
-Now, I just want it to be silent, if not in use.&lt;/p></description><content:encoded><![CDATA[<p>I recently revived my Synology D415+ NAS from <a href="https://www.youtube.com/watch?v=PkZ0249t7SI&amp;t=339s">silicon death</a> and it looks like
+Now, I just want it to be silent, if not in use.&lt;/p&gt;</description><content:encoded><![CDATA[<p>I recently revived my Synology D415+ NAS from <a href="https://www.youtube.com/watch?v=PkZ0249t7SI&amp;t=339s">silicon death</a> and it looks like
 it works fine again. When I bought it, I wanted to be able to run any docker
 image. Which is why I opted for Atom instead of ARM. Which is also why I upgraded
 RAM to 8GB. The disks basically never spun down which made it quite noisy.
@@ -1164,17 +1187,17 @@ anyways. I still do not understand this behavior and if anybody has an idea and
 how to fix it, please let me know.</p>
 <p>PS: I am aware that constantly spinning disks might not wear out as fast but
 this is a risk I am willing to take right now.</p>
-]]></content:encoded></item><item><title>Starting to Blog</title><link>https://www.relg.uk/posts/starting-to-blog/</link><pubDate>Fri, 17 Dec 2021 20:06:17 +0100</pubDate><guid>https://www.relg.uk/posts/starting-to-blog/</guid><description>&lt;p>Recently re-inspired to start to blog, I decided to open – same as
-&lt;a href="https://jay.jvf.cc/posts/about-itself/">Jay Faulkner&lt;/a> – with a meta post about why, what to expect, and how I (will) do
-it.&lt;/p>
-&lt;h2 id="why-i-want-to-blog">Why I Want to Blog&lt;/h2>
-&lt;p>If I start to learn a new topic, I feel like a total beginner. But the more I
+]]></content:encoded></item><item><title>Starting to Blog</title><link>https://www.relg.uk/posts/starting-to-blog/</link><pubDate>Fri, 17 Dec 2021 20:06:17 +0100</pubDate><guid>https://www.relg.uk/posts/starting-to-blog/</guid><description>&lt;p&gt;Recently re-inspired to start to blog, I decided to open – same as
+&lt;a href="https://jay.jvf.cc/posts/about-itself/"&gt;Jay Faulkner&lt;/a&gt; – with a meta post about why, what to expect, and how I (will) do
+it.&lt;/p&gt;
+&lt;h2 id="why-i-want-to-blog"&gt;Why I Want to Blog&lt;/h2&gt;
+&lt;p&gt;If I start to learn a new topic, I feel like a total beginner. But the more I
 learn about something, the more I can draw from related topics to generate a
 more complete understanding of how it works. We all go through this. But
 at which point is it okay to talk about it as if you were knowledgable about the
 topic? I would say, do it earlier than you think, be honest about your state of
 understanding, and do not be afraid to be wrong (as long as it does not kill
-anyone). Writing is understanding.&lt;/p></description><content:encoded><![CDATA[<p>Recently re-inspired to start to blog, I decided to open – same as
+anyone). Writing is understanding.&lt;/p&gt;</description><content:encoded><![CDATA[<p>Recently re-inspired to start to blog, I decided to open – same as
 <a href="https://jay.jvf.cc/posts/about-itself/">Jay Faulkner</a> – with a meta post about why, what to expect, and how I (will) do
 it.</p>
 <h2 id="why-i-want-to-blog">Why I Want to Blog</h2>
