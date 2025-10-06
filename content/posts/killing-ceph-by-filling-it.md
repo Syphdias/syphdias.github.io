@@ -1,6 +1,7 @@
 ---
 title: "Killing Ceph by Filling It"
 date: 2025-01-21T19:20:34+01:00
+lastmd: 2025-10-06T21:38:47+02:00
 ---
 
 Apparently I do not have any customers that do not fill their Ceph clusters to
@@ -58,8 +59,9 @@ ceph osd pool autoscale-status
 
 The autoscaler is a good starting point especially, if you do not know the exact
 distribution of your data at the beginning. In the past PG count always had to
-be calculated manually with a target count of approximately 100 PGs per OSD.
-There is [PG Calc] to do this manually and it is still useful today.
+be calculated manually with a target count of approximately (or at least) 100
+PGs per OSD. There is [PG Calc] to do this manually and it is still useful
+today.
 
 Ideally you know your target pool sizes or at least ratios and set the values
 accordingly for each pool and let the autoscaler do the rest. Or you can set the
@@ -74,6 +76,36 @@ one OSD is lower as well.
 
 Looking at `ceph osd df`, and `ceph balancer eval` can give you an idea how well
 your data is distributed.
+
+### Fixing "Wrong" Defaults
+
+There is one gotcha when doing manual PG calculations and comparing them to what
+the autoscaler wants to do. While the autoscaler aims for 100 PGs per Ceph OSD
+by default, it also errs on the side of caution and keeps PG counts usually to
+low.
+
+While there are [downsides to higher PG count] (cpu, memory), most modern,
+non-tiny clusters should aim for a 100 to 200 PG per Ceph OSD. The [official
+documentation recommends] to set `mon_target_pg_per_osd` "for all but the very
+smallest deployments" to `200`. It does not specify what constitutes "very
+smallest" but I would say, if you have more than 50 Ceph OSDs you are not longer
+operating a "very small" deployment but a "quite small" deployment.
+
+From the same passage of the documentation we get: "A value above 500 may result
+in excessive peering traffic and RAM usage.". To prevent this from happening we
+can limit `mon_max_pg_per_osd` to 500, 400, or 300 — what ever you are most
+comfortable with.
+
+```sh
+ceph config set global mon_target_pg_per_osd 200
+ceph config set global mon_max_pg_per_osd 500
+```
+
+> Note: The examples below still had these settings at their default. :(
+
+If you ask me, the values from the documentation should be the default with the
+advice to lower these values. Though looking at [public telemetry data] — maybe
+not.
 
 ### Example of Increasing PG Counts
 
@@ -203,4 +235,7 @@ ceph osd dump | grep ratio
 [Balancer Module]: https://docs.ceph.com/en/latest/rados/operations/balancer/
 [some issues]: ./killing-your-ceph-with-autoscaling.md
 [PG Calc]: https://docs.ceph.com/en/latest/rados/operations/pgcalc/
+[downsides to higher PG count]: https://docs.ceph.com/en/reef/rados/operations/placement-groups/#factors-relevant-to-specifying-pg-num
+[official documentation recommends]: https://docs.ceph.com/en/reef/rados/operations/placement-groups/#automated-scaling
+[public telemetry data]: https://telemetry-public.ceph.com/d/CMhSOJ3Zz/capacity-density?orgId=1
 [repo]: https://github.com/Syphdias/ceph-scripts
