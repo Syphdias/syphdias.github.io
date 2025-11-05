@@ -20,7 +20,7 @@ There are currently three documented ways to change Network/IPs.
 addresses.](/assets/ceph-existing-mons.png)
 _Screenshot from the official Ceph documentation_
 
-### "The Right Way"
+## "The Right Way"
 
 While old documentation called it ["The Right Way"], it is now called the
 ["Preferred Method"].
@@ -33,7 +33,7 @@ The documentation only suggest to do this in a manual fashion but in practice
 
 …as long as the new IPs are within the current network or at least reachable.
 
-### "The Messy Way"
+## "The Messy Way"
 
 While old documentation called it ["The Messy Way"], it is now called ["Advanced
 Method"] — a bit boring, if you ask me since it can get messy, if you are
@@ -51,7 +51,7 @@ This leaves out a few things like changing the public_network in the
 configuration database and how to deal with daemons and all the _messiness_ that
 might come after.
 
-### "The Third Way"
+## "The Third Way"
 
 Okay, I lied. There is no third way but a more detailed version of ["The Messy
 Way"](#the-messy-way) using cephadm.
