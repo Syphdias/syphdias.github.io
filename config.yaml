@@ -1,7 +1,6 @@
 ---
-
 baseURL: "https://www.relg.uk/"
-languageCode: "en-us"
+locale: "en-us"
 title: "relg.uk"
 theme: "PaperMod"
 enableRobotsTXT: true
@@ -15,6 +14,7 @@ outputs:
     - JSON
 
 params:
+  author: "Christian Kugler"
   defaultTheme: "auto"
   dateFormat: 2006-01-02
   homeInfoParams:
@@ -66,4 +66,4 @@ menu:
 languages:
   en:
     weight: 1
-    languageName: "English"
+    label: "English"
