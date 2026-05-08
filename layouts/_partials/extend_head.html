@@ -1,0 +1,21 @@
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // split Title into individual addressable spans
+        const el = document.querySelector(".logo a");
+        el.innerHTML = [...el.textContent]
+            .map(ch => `<span>${ch}</span>`)
+            .join('');
+
+        // different logo animation behaviour depending on first load or not
+        // 1. load: relg.uk -> kugler
+        //   hover: kugler -> relg.uk
+        // n. load: relg.uk
+        //   hover: relg.uk -> kugler
+        if (!sessionStorage.getItem("nthLoad")) {
+            document.querySelector(".logo").classList.add("logo-first-load");
+            sessionStorage.setItem("nthLoad", "true");
+        } else {
+            document.querySelector(".logo").classList.add("logo-nth-load");
+        }
+    })
+</script>

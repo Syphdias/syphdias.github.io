@@ -1,0 +1,67 @@
+.logo {
+    display: flex;
+    font-family: MesloLGS NF, monospace;
+    font-size: 2em;
+    cursor: pointer;
+}
+.logo a {
+    display: block;
+}
+.logo span {
+    display: inline-block;
+}
+
+/* first load */
+.logo-first-load span {
+    animation-delay: 1s;
+}
+@keyframes char_r { 0% { transform: translateX(0); } 100% { transform: translateX(6ch); } }
+@keyframes char_e { 0% { transform: translateX(0); } 100% { transform: translateX(4ch); } }
+@keyframes char_l { 0% { transform: translateX(0); } 100% { transform: translateX(2ch); } }
+/* g stays fixed */
+@keyframes char_dot { 0% { transform: translateX(0); opacity: 1; } 100% { transform: translateX(-2ch); opacity: 0; } }
+@keyframes char_u { 0% { transform: translateX(0); } 100% { transform: translateX(-3ch); } }
+@keyframes char_k { 0% { transform: translateX(0); } 100% { transform: translateX(-5ch); } }
+
+/* 1. transistion did not work properly on page load */
+/* 2. needs to be set via animation (not separately as animation-name, etc.)
+      because if I use separte properties I cannot override them */
+/* parameters: keyframes duration timing-function duration fill-mode */
+.logo-first-load span:nth-child(1) { animation: char_r .5s ease 1s forwards; }
+.logo-first-load span:nth-child(2) { animation: char_e .5s ease 1s forwards; }
+.logo-first-load span:nth-child(3) { animation: char_l .5s ease 1s forwards; }
+/* g stays fixed */
+.logo-first-load span:nth-child(5) { animation: char_dot .5s ease 1s forwards; }
+.logo-first-load span:nth-child(6) { animation: char_u .5s ease 1s forwards; }
+.logo-first-load span:nth-child(7) { animation: char_k .5s ease 1s forwards; }
+
+@keyframes char1r { 0% { transform: translateX(6ch); }  100% { transform: translateX(0); } }
+@keyframes char2r { 0% { transform: translateX(4ch); }  100% { transform: translateX(0); } }
+@keyframes char3r { 0% { transform: translateX(2ch); }  100% { transform: translateX(0); } }
+/* g stays fixed */
+@keyframes char5r { 0% { transform: translateX(-2ch); opacity: 0; } 100% { transform: translateX(0); opacity: 1; } }
+@keyframes char6r { 0% { transform: translateX(-3ch); } 100% { transform: translateX(0); } }
+@keyframes char7r { 0% { transform: translateX(-5ch); } 100% { transform: translateX(0); } }
+
+.logo-first-load:hover span {
+    animation-delay: 0s;
+}
+.logo-first-load:hover span:nth-child(1) { animation-name: char1r; }
+.logo-first-load:hover span:nth-child(2) { animation-name: char2r; }
+.logo-first-load:hover span:nth-child(3) { animation-name: char3r; }
+/* g stays fixed */
+.logo-first-load:hover span:nth-child(5) { animation-name: char5r; }
+.logo-first-load:hover span:nth-child(6) { animation-name: char6r; }
+.logo-first-load:hover span:nth-child(7) { animation-name: char7r; }
+
+/* n-th load */
+.logo-nth-load span {
+    transition: transform .5s ease, opacity .5s ease;
+}
+.logo-nth-load:hover span:nth-child(1) { transform: translateX(6ch); }
+.logo-nth-load:hover span:nth-child(2) { transform: translateX(4ch); }
+.logo-nth-load:hover span:nth-child(3) { transform: translateX(2ch); }
+/* .logo-nth-load:hover span:nth-child(4) { transform: translateX(-1ch); } */
+.logo-nth-load:hover span:nth-child(5) { transform: translateX(-2ch); opacity: 0; }
+.logo-nth-load:hover span:nth-child(6) { transform: translateX(-3ch); }
+.logo-nth-load:hover span:nth-child(7) { transform: translateX(-5ch); }
