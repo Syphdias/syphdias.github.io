@@ -2,5 +2,9 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": ["config:recommended"],
   "labels": ["dependencies"],
-  "schedule": ["before 6am on Monday"]
+  "schedule": ["before 6am on Monday"],
+  "onboarding": false,
+  "requireConfig": "optional",
+  "repositories": ["syphdias/syphdias.github.io"],
+  "gitAuthor": "Renovate Bot <renovate@relg.uk>"
 }
