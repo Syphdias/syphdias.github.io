@@ -13,7 +13,7 @@
 
 /* first load */
 .logo-first-load span {
-    animation-delay: 1s;
+    animation-delay: 2s;
 }
 @keyframes char_r { 0% { transform: translateX(0); } 100% { transform: translateX(6ch); } }
 @keyframes char_e { 0% { transform: translateX(0); } 100% { transform: translateX(4ch); } }
