@@ -19,7 +19,7 @@ params:
   dateFormat: 2006-01-02
   homeInfoParams:
     Title: "Hi there 👋"
-    Content: "OpenSourcerer 🧙 (FOSS) who loves chocolate"
+    Content: "OpenSourcerer 🧙🏻‍♂️ (FOSS) who loves chocolate"
   socialIcons:
     - name: "github"
       url: "https://github.com/syphdias"
@@ -40,26 +40,12 @@ params:
 menu:
   main:
     - identifier: search
-      pre: >
-        <img src="/magnifying-glass-solid.svg"
-        alt="search"
-        style="height: 1em;
-               width: 1em;
-               display: inline-block;
-               margin-right: 0.3em;
-               vertical-align: middle;">
+      pre: <img alt="search" class="menu-icon" src="/magnifying-glass-solid.svg">
       name: search
       url: /search/
       weight: 10
     - identifier: archive
-      pre: >
-        <img src="/box-archive-solid.svg"
-        alt="archive"
-        style="height: 1em;
-               width: 1em;
-               display: inline-block;
-               margin-right: 0.3em;
-               vertical-align: middle;">
+      pre: <img alt="archive" class="menu-icon" src="/box-archive-solid.svg">
       name: archive
       url: /archives/
       weight: 20
