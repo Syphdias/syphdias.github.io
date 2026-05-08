@@ -3,8 +3,5 @@
   "extends": ["config:recommended"],
   "labels": ["dependencies"],
   "schedule": ["before 6am on Monday"],
-  "onboarding": false,
-  "requireConfig": "optional",
-  "repositories": ["syphdias/syphdias.github.io"],
   "gitAuthor": "Renovate Bot <renovate@relg.uk>"
 }
