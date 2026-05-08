@@ -36,6 +36,8 @@ params:
   env: production
   social:
     fediverse_creator: "@syphdias@social.linux.pizza"
+  images:
+    - site-logo.svg
 
 menu:
   main:

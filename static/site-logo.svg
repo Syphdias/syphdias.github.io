@@ -1,0 +1,17 @@
+<svg width="300" height="300" viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    .dark { fill: rgb(30, 30, 30); }
+    .light { fill: rgb(218, 218, 219); }
+  </style>
+
+  <rect width="300" height="300" y="0" class="light" />
+
+  <defs>
+    <polygon id="bighex" points="0.0,-130.0 -112.583302492,-65.0 -112.583302492,65.0 -0.0,130.0 112.583302492,65.0 112.583302492,-65.0" class="dark" />
+    <polygon id="midhex" points="80.0,-0.0 40.0,-69.2820323028 -40.0,-69.2820323028 -80.0,-0.0 -40.0,69.2820323028 40.0,69.2820323028" class="light" />
+    <polygon id="smallhex" points="0.0,-40.0 -34.6410161514,-20.0 -34.6410161514,20.0 -0.0,40.0 34.6410161514,20.0 34.6410161514,-20.0" class="dark" />
+  </defs>
+  <use href="#bighex" x="150" y="150" />
+  <use href="#midhex" x="150" y="150" />
+  <use href="#smallhex" x="150" y="150" />
+</svg>
