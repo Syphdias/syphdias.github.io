@@ -1,4 +1,101 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>Posts on relg.uk</title><link>https://www.relg.uk/posts/</link><description>Recent content in Posts on relg.uk</description><generator>Hugo -- 0.152.2</generator><language>en</language><lastBuildDate>Wed, 05 Nov 2025 20:11:02 +0100</lastBuildDate><atom:link href="https://www.relg.uk/posts/index.xml" rel="self" type="application/rss+xml"/><item><title>Killing Ceph by Changing Networks</title><link>https://www.relg.uk/posts/killing-ceph-by-changing-networks/</link><pubDate>Wed, 05 Nov 2025 20:11:02 +0100</pubDate><guid>https://www.relg.uk/posts/killing-ceph-by-changing-networks/</guid><description>&lt;p&gt;Since a customer requested to change networks of Ceph first in 2023 and then
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>Posts on relg.uk</title><link>https://www.relg.uk/posts/</link><description>Recent content in Posts on relg.uk</description><generator>Hugo</generator><language>en-us</language><lastBuildDate>Thu, 07 May 2026 15:45:01 +0200</lastBuildDate><atom:link href="https://www.relg.uk/posts/index.xml" rel="self" type="application/rss+xml"/><item><title>Never Use QR Codes to Authenticate</title><link>https://www.relg.uk/posts/never-use-qr-codes-to-authenticate/</link><pubDate>Thu, 07 May 2026 15:45:01 +0200</pubDate><guid>https://www.relg.uk/posts/never-use-qr-codes-to-authenticate/</guid><description>&lt;p&gt;It was quite late and I was about to logoff to go to sleep, when I got a message
+from a friend on Steam. &amp;ldquo;Hey could you vote for my team in this competition, it
+is the $TEAMNAME. Just takes a minute. $URL&amp;rdquo;.&lt;/p&gt;
+&lt;p&gt;Sure no problem. I haven&amp;rsquo;t seen this in a while, but a decade or two ago (ouch)
+this was quite common. So I go to the website — nothing out of the ordinary —
+just like in &lt;em&gt;the old days&lt;/em&gt;, I&amp;rsquo;d say. So I scroll down to their team and click
+on the vote button and it wants to verify that I am a genuine person by
+authenticating with my Steam account. Probably some oauth to Steam that just
+wants to get basic profile information that my account was not just created two
+minutes ago. If it wants too much access I can still deny.&lt;/p&gt;</description><content:encoded><![CDATA[<p>It was quite late and I was about to logoff to go to sleep, when I got a message
+from a friend on Steam. &ldquo;Hey could you vote for my team in this competition, it
+is the $TEAMNAME. Just takes a minute. $URL&rdquo;.</p>
+<p>Sure no problem. I haven&rsquo;t seen this in a while, but a decade or two ago (ouch)
+this was quite common. So I go to the website — nothing out of the ordinary —
+just like in <em>the old days</em>, I&rsquo;d say. So I scroll down to their team and click
+on the vote button and it wants to verify that I am a genuine person by
+authenticating with my Steam account. Probably some oauth to Steam that just
+wants to get basic profile information that my account was not just created two
+minutes ago. If it wants too much access I can still deny.</p>
+<p>Oh great I can use the QR code to log in. So I pull out my phone and scan the QR
+code with the Steam Authenticator app. Vote confirmed, I go to bed.</p>
+<p><strong>This was a mistake</strong> as I will find out after I get up in the morning to
+multiple people messaging me: &ldquo;yo, check your Steam account, I think your
+account got hijacked&rdquo;. (Actually most people say &ldquo;hacked&rdquo; but that is
+technically not the right term.)</p>
+<p>I spent the rest of the morning changing the password, checking tokens, etc. to
+get the malicious party out of my account and message my entire friend list, to
+warn them as early as possible not to click on the link that now I was sending
+to people.</p>
+<p>I later discovered that the hijacker also removed and blocked some of my friends
+because they recognized the phishing attempt and reacted appropriately, such as:
+&ldquo;Could you send me a message on Discord&rdquo; (reply was Cyrillic) or &ldquo;Done&rdquo; (without
+actually doing it, which the phisher recognized and got annoyed with &ldquo;I don&rsquo;t
+see your vote&rdquo;).</p>
+<p>This experience sucked but in the end it was just my Steam account that I could
+easily get back with some annoyances. I am glad it happened to my Steam account
+and not my bank account. Because I learned my lesson to never use QR codes to
+authenticate.</p>
+<h2 id="how-did-this-happen">How Did This Happen?</h2>
+<p>So why did this happen? And what could have prevented this?</p>
+<p>I cannot say for certain that the following is what has happened. Since at the
+time I wanted to check, the website was already offline again.</p>
+<p>When I got prompted to log into the fake-Steam I did not check what the URL
+said; I assume it was a Steam lookalike website — and to be honest I could not
+even say for certain what the real Steam URL is (Steampowered-something dot
+com?).</p>
+<p>Had I used my password manager, it would not have recognized the website and not
+offered to inject my username and password. This would have protected me.</p>
+<p>But since I used the QR code to login, there was nothing to check the origin of
+the QR code. I assume the website got a legitimate QR to login from Steam web
+login and displayed it. When I scanned it and logged myself in, I confirmed the
+web login in the background. Note, that I did not enter my password and I did
+not &ldquo;save&rdquo; the login. This way the attacker only got one session token.</p>
+<p>This can happen with anything that allows for QR authentication.</p>
+<ul>
+<li>Step 1: Go to a legitimate website with this mechanism (for example my bank).</li>
+<li>Step 2: Get the QR code(s) and put them into some sort of middleware, where
+the victim might use it.</li>
+<li>Step 3: Get the victim to scan the QR code(s).</li>
+<li>Step 4: The middleware now has access to the real website/app and can do its
+evil deeds. As cover, it just needs to present some sort of success message
+for the victim not to suspect anything.</li>
+</ul>
+<p>Obviously the attacker does not do this manually but writes their program to do
+this automatically, refresh QR codes, and do the evil bidding if successful.</p>
+<p>I say QR codes because my bank requires two consecutive scans of QR codes to log
+in but that does not change the scenario, just makes it more involved to write
+the middleware.</p>
+<h2 id="the-future-of-passkeys">The Future of Passkeys</h2>
+<p>Passkeys have many Pros and Cons which I do not want to go into in detail here.
+The Cons unfortunately do not make them a no-brain replacement for passwords
+(portability, backup, etc.) but what they do prevent is this kind of attack.</p>
+<p>If you create a passkey with WebAuthn for a website, the process includes the
+website in the authentication process. The way it works makes it impossible to
+use the wrong passkey on the wrong website. It also makes it impossible for a
+website&rsquo;s name to change while retaining passkey login (another downside). (This
+assumes you do not have a compromised system or browser that does some extra
+steps to fake the website&rsquo;s name, etc.)</p>
+<h2 id="sending-emails">Sending Emails</h2>
+<p>Some websites like Slack allow you to not even set up a password. Instead you
+enter your email address and then receive a short one-time pin</p>
+<p>This would not protect against this attack. You would enter the email address
+into the malicious middleware, get a legitimate email with a pin, and enter the
+pin. Pwned.</p>
+<h2 id="what-about-mfa">What about MFA</h2>
+<p>Multifactor Authentication will not help in this scenario either as it is also
+not tied to a specific domain. I include all MFA here from simple TOTP
+(time-based), over HOTP (event-based, like clicking a button to &ldquo;further the
+ratchet&rdquo;), to specific apps that require you to enter some digits or press
+approve (like Microsoft&rsquo;s Authenticator). All these can easily just be forwarded
+by the malicious middleware to send it to the legitimate service.</p>
+<p>The benefit is that you have to pause and get out another device, hopefully, to
+recognize something is off.</p>
+<h2 id="so-what-to-do">So What To Do?</h2>
+<p>Use a good password manager that detects the website you are on! Or use a
+passkey if you dare. Or store the passkey in your password manager.</p>
+<p><strong>Do. Not. Use. QR. Codes. To. Authenticate.</strong></p>
+]]></content:encoded></item><item><title>Killing Ceph by Changing Networks</title><link>https://www.relg.uk/posts/killing-ceph-by-changing-networks/</link><pubDate>Wed, 05 Nov 2025 20:11:02 +0100</pubDate><guid>https://www.relg.uk/posts/killing-ceph-by-changing-networks/</guid><description>&lt;p&gt;Since a customer requested to change networks of Ceph first in 2023 and then
 two more times, I felt like I had to put it in writing some time.&lt;/p&gt;
 &lt;p&gt;This use-case &lt;em&gt;should&lt;/em&gt; be rare. But here the network &lt;em&gt;design&lt;/em&gt; changed multiple
 times — maybe this is that &lt;em&gt;Agile&lt;/em&gt; I heard so much about. But in all
@@ -57,12 +154,12 @@ know how to get around your setup — if you don&rsquo;t, please abort and ask f
 mention some things outside the cluster to look out for at the end.</p>
 <p>I want to prevent data movement of any kind. It is probably not needed but I
 like the precaution.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>ceph osd set noout
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>ceph osd set noout
 </span></span><span style="display:flex;"><span>ceph osd set norebalance
 </span></span><span style="display:flex;"><span>ceph osd set nobackfill
 </span></span></code></pre></div><p>Stopping all Ceph services using Ansible and prevent them from starting when the
 hosts will be rebooted for the network changes to be properly applied.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>ansible ceph_hosts -m systemd -a <span style="color:#e6db74">&#39;name=ceph.target state=stopped enabled=false&#39;</span> -b
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>ansible ceph_hosts -m systemd -a <span style="color:#e6db74">&#39;name=ceph.target state=stopped enabled=false&#39;</span> -b
 </span></span></code></pre></div><p>On one of the hosts I do more or less what <a href="/posts/killing-ceph-by-changing-networks/#the-third-way">&ldquo;The Third Way&rdquo;</a>
 says. I change my monmap but with two important changes:</p>
 <ul>
@@ -70,7 +167,7 @@ says. I change my monmap but with two important changes:</p>
 <li>Only doing this once and then injecting the same monmap into all Ceph Mons
 while the documentation suggests repeating the edit process for all Ceph Mons</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>root@ceph01:~# cephadm shell --name mon.ceph01 --mount /root:/roothome
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>root@ceph01:~# cephadm shell --name mon.ceph01 --mount /root:/roothome
 </span></span><span style="display:flex;"><span>Inferring fsid f52ba149-31ea-4da9-9b11-17e745e20d35
 </span></span><span style="display:flex;"><span>Inferring config /var/lib/ceph/f52ba149-31ea-4da9-9b11-17e745e20d35/mon.ceph01/config
 </span></span><span style="display:flex;"><span>Using recent ceph image quay.io/ceph/ceph@sha256:1b9158ce28975f95def6a0ad459fa19f1336506074267a4b47c1bd914a00fec0
@@ -83,7 +180,7 @@ while the documentation suggests repeating the edit process for all Ceph Mons</l
 <p>Now I removed the old IPs and add the new ones. I believe the up-to-date version
 of the add command more complicated than it needed to be and opted for the old
 syntax.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>root@ceph01:/roothome# monmaptool --print monmap-2025-11-05-new
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>root@ceph01:/roothome# monmaptool --print monmap-2025-11-05-new
 </span></span><span style="display:flex;"><span>monmaptool: monmap file monmap-2025-11-05-new
 </span></span><span style="display:flex;"><span>epoch 10
 </span></span><span style="display:flex;"><span>fsid f52ba149-31ea-4da9-9b11-17e745e20d35
@@ -128,13 +225,13 @@ Ceph Mons failed or did not come up right away. I later <a href="https://docs.ce
 Mon</a> after the existing Ceph Mons were up again.</p>
 <p>I did not want to do these steps for every Ceph Mon host, so I copied the new
 monmap to the relevant hosts.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#66d9ef">for</span> i in <span style="color:#f92672">{</span>02..05<span style="color:#f92672">}</span>; <span style="color:#66d9ef">do</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#66d9ef">for</span> i in <span style="color:#f92672">{</span>02..05<span style="color:#f92672">}</span>; <span style="color:#66d9ef">do</span>
 </span></span><span style="display:flex;"><span>    ssh ceph01 sudo cat /root/monmap-2025-11-05-new <span style="color:#ae81ff">\
-</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    | ssh ceph$i sudo tee /root/monmap-2025-11-05-new &gt; /dev/null
+</span></span></span><span style="display:flex;"><span>    | ssh ceph$i sudo tee /root/monmap-2025-11-05-new &gt; /dev/null
 </span></span><span style="display:flex;"><span><span style="color:#66d9ef">done</span>
 </span></span></code></pre></div><p>I ran the following commands to inject the monmap on each one of them, quick and
 dirty as well.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#66d9ef">for</span> i in <span style="color:#f92672">{</span>01..05<span style="color:#f92672">}</span>; <span style="color:#66d9ef">do</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#66d9ef">for</span> i in <span style="color:#f92672">{</span>01..05<span style="color:#f92672">}</span>; <span style="color:#66d9ef">do</span>
 </span></span><span style="display:flex;"><span>    ssh ceph$i <span style="color:#e6db74">&#34;sudo cephadm shell --mount /root:/roothome --name mon.ceph</span>$i<span style="color:#e6db74"> \
 </span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        ceph-mon -i ceph</span>$i<span style="color:#e6db74"> --inject-monmap /roothome/monmap-2025-11-05-new&#34;</span>
 </span></span><span style="display:flex;"><span><span style="color:#66d9ef">done</span>
@@ -148,10 +245,10 @@ needed for any reason.</p>
 changing the network configuration on the hosts and the switches, this might be
 harder as I might not be able to easily connect to the hosts to deploy the old
 network configuration.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>ansible-playbook site.yaml -t ceph_networking -D
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>ansible-playbook site.yaml -t ceph_networking -D
 </span></span></code></pre></div><p>Since I am not in charge of the network hardware, this was the time to talk to
 the networking people, so they would switch over to the new configuration.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>ansible ceph_hosts -m reboot -b
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>ansible ceph_hosts -m reboot -b
 </span></span></code></pre></div><p>After the reboots I checked the network using another Ansible script, that would
 check for bond failures, negotiated speed, VLAN tags, and finally pinging from
 every host to every other host on public and cluster network using jumbo frames.
@@ -160,19 +257,19 @@ experience to not run into weird issues due to missing MTU on some interfaces or
 other configuration errors (hardware or software).</p>
 <p>Note: To ping from everywhere to everywhere it builds a list of IPs filtered by
 CIDRs and loops over this list on every host.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>ansible-playbook check-network.yaml
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>ansible-playbook check-network.yaml
 </span></span></code></pre></div><p>Restart the cluster, if everything is okay.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>ansible ceph_hosts -m systemd -a <span style="color:#e6db74">&#39;name=ceph.target state=started enabled=true&#39;</span> -b
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>ansible ceph_hosts -m systemd -a <span style="color:#e6db74">&#39;name=ceph.target state=started enabled=true&#39;</span> -b
 </span></span></code></pre></div><p>Setting <code>public_network</code>. I am not sure why it is set on <code>mon</code> and <code>global</code> level,
 but there is no harm updating both.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>ceph config set mon public_network 192.168.160.128/24
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>ceph config set mon public_network 192.168.160.128/24
 </span></span><span style="display:flex;"><span>ceph config set global public_network 192.168.160.128/24
 </span></span></code></pre></div><p>Fixing Ceph Mgr config:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>ceph config generate-minimal-conf &gt;/var/lib/ceph/f52ba149-31ea-4da9-9b11-17e745e20d35/mgr.ceph01.yeinoh/config
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>ceph config generate-minimal-conf &gt;/var/lib/ceph/f52ba149-31ea-4da9-9b11-17e745e20d35/mgr.ceph01.yeinoh/config
 </span></span><span style="display:flex;"><span>systemctl reset-failed ceph-f52ba149-31ea-4da9-9b11-17e745e20d35@mgr.ceph01.yeinoh
 </span></span><span style="display:flex;"><span>systemctl start $_
 </span></span></code></pre></div><p>Since the orchestrator does not know the new IPs yet, I needed to set them.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>ceph orch host set-addr ceph01 192.168.160.1
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>ceph orch host set-addr ceph01 192.168.160.1
 </span></span><span style="display:flex;"><span><span style="color:#75715e"># repeated for all hosts</span>
 </span></span></code></pre></div><p>It will take a few minutes for the orchestrator to gather all information from
 every host again.</p>
@@ -181,7 +278,7 @@ before it leaves you with the rest to fix for yourself. For example, to get a
 working standby Ceph Mgr and some other services I ran <code>ceph orch reconfig</code> for
 all services on this cluster, including Ceph Mons to ensure there is no residue
 config referencing the old network.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>ceph orch reconfig osd
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>ceph orch reconfig osd
 </span></span><span style="display:flex;"><span>ceph orch reconfig mgr
 </span></span><span style="display:flex;"><span>ceph orch reconfig mds
 </span></span><span style="display:flex;"><span>ceph orch reconfig mon
@@ -189,7 +286,7 @@ config referencing the old network.</p>
 </span></span></code></pre></div><p>Note: I guess <code>ceph orch redeploy $service</code> would work as well but would take
 longer.</p>
 <p>Now we unset the flags to allow the cluster to function again normally.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>ceph osd unset noout
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>ceph osd unset noout
 </span></span><span style="display:flex;"><span>ceph osd unset norebalance
 </span></span><span style="display:flex;"><span>ceph osd unset nobackfill
 </span></span></code></pre></div><p>Now for the supporting services, that need to be checked for functionality and I
@@ -257,14 +354,14 @@ But, alas, PG sizes vary (especially between pools), Ceph OSDs have different
 sizes and the storage usage is unevenly distributed. To fight this, Ceph has the
 <a href="https://docs.ceph.com/en/latest/rados/operations/balancer/">Balancer Module</a> that tries to do its best to optimize a low spread of
 different usages. Make sure it is enabled and used &ldquo;upmap&rdquo;.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>ceph balancer status
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>ceph balancer status
 </span></span></code></pre></div><p>Another variable that can be tuned automatically by Ceph is PGs per pool. It
 takes in some variables like pool usage, target size and target ratio to
 calculate the ideal <code>pg_num</code> count for the pools it is enabled on. I recommend
 to at least put this on <code>warn</code> for every pool, if you have no reason not to.
 I did have <a href="/posts/killing-your-ceph-with-autoscaling/">some issues</a> in the past with it but nonetheless it is worth at
 least getting some advice from it.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>ceph osd pool autoscale-status
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>ceph osd pool autoscale-status
 </span></span></code></pre></div><p>The autoscaler is a good starting point especially, if you do not know the exact
 distribution of your data at the beginning. In the past PG count always had to
 be calculated manually with a target count of approximately (or at least) 100
@@ -296,7 +393,7 @@ operating a &ldquo;very small&rdquo; deployment but a &ldquo;quite small&rdquo; 
 in excessive peering traffic and RAM usage.&rdquo;. To prevent this from happening we
 can limit <code>mon_max_pg_per_osd</code> to 500, 400, or 300 — what ever you are most
 comfortable with.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>ceph config set global mon_target_pg_per_osd <span style="color:#ae81ff">200</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>ceph config set global mon_target_pg_per_osd <span style="color:#ae81ff">200</span>
 </span></span><span style="display:flex;"><span>ceph config set global mon_max_pg_per_osd <span style="color:#ae81ff">500</span>
 </span></span></code></pre></div><blockquote>
 <p>Note: The examples below still had these settings at their default. :(</p>
@@ -308,7 +405,7 @@ not.</p>
 <p>This is from a purely replicated RADOS cluster with HDDs OSDs only (except for
 the RocksDB).</p>
 <p><strong>Before:</strong></p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>❯ ceph balancer eval
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>❯ ceph balancer eval
 </span></span><span style="display:flex;"><span>current cluster score 0.041072 (lower is better)
 </span></span><span style="display:flex;"><span>❯ # awk filters relevant information: min/max OSD, total, PG/OSD, and variance
 </span></span><span style="display:flex;"><span>❯ ceph osd df |awk -v min=100 -v max=0 \
@@ -324,7 +421,7 @@ the RocksDB).</p>
 </span></span></code></pre></div><p>All pools have been set to <code>ceph osd pool set &lt;pool-name&gt; pg_autoscale_mode warn</code> and some of them have been assigned the bulk flag (<code>ceph osd pool set &lt;pool-name&gt; bulk true</code>) to make the autoscaler expect more data in this pool
 (usually your RBD pool, RGW data pool, or CephFS data pool).</p>
 <p><strong>After:</strong></p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>❯ ceph balancer eval
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>❯ ceph balancer eval
 </span></span><span style="display:flex;"><span>current cluster score 0.025255 (lower is better)
 </span></span><span style="display:flex;"><span>❯ # awk filters relevant information: min/max OSD, total, PG/OSD, and variance
 </span></span><span style="display:flex;"><span>❯ ceph osd df |awk -v min=100 -v max=0 \
@@ -361,12 +458,12 @@ take about as long as the PG increase or less).</p>
 <p><img alt="Recovery during PG increase" loading="lazy" src="/assets/ceph-recovery-1.png"></p>
 <p>To improve recovery speed I set <code>ceph config set osd osd_mclock_profile high_recovery_ops</code>. To not impact daily usage too much, I set up an ad-hoc
 systemd-timers:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>systemd-run --on-calendar <span style="color:#e6db74">&#39;Mon..Fri 2024-12-* 18:00&#39;</span> <span style="color:#ae81ff">\
-</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    ceph config set osd osd_mclock_profile high_recovery_ops
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>systemd-run --on-calendar <span style="color:#e6db74">&#39;Mon..Fri 2024-12-* 18:00&#39;</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span>    ceph config set osd osd_mclock_profile high_recovery_ops
 </span></span><span style="display:flex;"><span>systemd-run --on-calendar <span style="color:#e6db74">&#39;Mon..Fri 2024-12-* 08:00&#39;</span> <span style="color:#ae81ff">\
-</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    ceph config set osd osd_mclock_profile high_client_ops
+</span></span></span><span style="display:flex;"><span>    ceph config set osd osd_mclock_profile high_client_ops
 </span></span><span style="display:flex;"><span>systemd-run --on-calendar <span style="color:#e6db74">&#39;2025-01-01 08:00&#39;</span> <span style="color:#ae81ff">\
-</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    ceph config set osd osd_mclock_profile high_client_ops
+</span></span></span><span style="display:flex;"><span>    ceph config set osd osd_mclock_profile high_client_ops
 </span></span></code></pre></div><p>Note: Keep in mind, that if the server these commands were run on restarts, the
 timers are gone. So make sure to check that you have indeed set the proper
 <code>osd_mclock_profile</code> after you are done. You could also remove the setting to go
@@ -383,11 +480,11 @@ based on future balance results.</p>
 <p>If you are really in a pickle and need to get a blocked cluster running again to
 be able to rebalance (not to use it!), you can change what is recognized as a
 backfillfull or full Ceph OSD. I do not recommend this!</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>ceph osd dump | grep ratio
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>ceph osd dump | grep ratio
 </span></span><span style="display:flex;"><span>ceph osd set-backfillfull-ratio $higher
 </span></span><span style="display:flex;"><span>ceph osd set-full-ratio $more_higher
 </span></span></code></pre></div><p><strong>Also, make sure to change it back after your incident!</strong></p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>ceph osd set-backfillfull-ratio .9
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>ceph osd set-backfillfull-ratio .9
 </span></span><span style="display:flex;"><span>ceph osd set-full-ratio .95
 </span></span><span style="display:flex;"><span>ceph osd dump | grep ratio
 </span></span></code></pre></div>]]></content:encoded></item><item><title>GPG and Offline Keys</title><link>https://www.relg.uk/posts/gpg-and-offline-keys/</link><pubDate>Tue, 14 Jan 2025 23:21:30 +0100</pubDate><guid>https://www.relg.uk/posts/gpg-and-offline-keys/</guid><description>&lt;p&gt;It is time again for me to renew my GPG keys and I wanted to write something
@@ -452,7 +549,7 @@ the workings of GPG. I really liked Neal Walfield&rsquo;s <a href="https://begri
 Linux). To use another, temporary, and clean configuration directory you can set
 <code>GNUPGHOME</code>. You can export it like in the following or provide the <code>--homedir</code>
 argument for every call to GPG.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>export GNUPGHOME<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>mktemp -d -t gnupg_<span style="color:#66d9ef">$(</span>date +%Y%m%d%H%M<span style="color:#66d9ef">)</span>_XXX<span style="color:#66d9ef">)</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>export GNUPGHOME<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>mktemp -d -t gnupg_<span style="color:#66d9ef">$(</span>date +%Y%m%d%H%M<span style="color:#66d9ef">)</span>_XXX<span style="color:#66d9ef">)</span>
 </span></span></code></pre></div><h2 id="actions-of-keys">Actions of Keys</h2>
 <p>You might guess that there are at least two actions a key can be used for:
 signing (a message) and encrypting a message.<br>
@@ -462,14 +559,14 @@ You can have separate keys for all four actions or you can combine sign, certify
 certifying are often combined, but I prefer to have a dedicated primary/certify
 key, to be able to move it off my devices. This is called &ldquo;offline&rdquo;; more on
 that later.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span><span style="color:#75715e"># generating primary key, valid for 1 year, this could also be 2006-01-02</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span><span style="color:#75715e"># generating primary key, valid for 1 year, this could also be 2006-01-02</span>
 </span></span><span style="display:flex;"><span><span style="color:#75715e"># use a secure passphrase</span>
 </span></span><span style="display:flex;"><span>gpg --quick-gen-key your@email.example ed25519 cert 1y
 </span></span><span style="display:flex;"><span><span style="color:#75715e"># generate sub key for signing and encryption (requires primary passphrase)</span>
 </span></span><span style="display:flex;"><span>gpg --quick-add-key 8CE453902E8E810DB46B8A5550ED5BF8E4042B5A ed25519 sign 1y
 </span></span><span style="display:flex;"><span>gpg --quick-add-key 8CE453902E8E810DB46B8A5550ED5BF8E4042B5A cv25519 encr 1y
 </span></span></code></pre></div><p>You can not now take a look a your key. The normal way or with more details:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>❯ gpg -K your@email.example
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>❯ gpg -K your@email.example
 </span></span><span style="display:flex;"><span>sec   ed25519 2025-01-05 [C] [expires: 2026-01-05]
 </span></span><span style="display:flex;"><span>      8CE453902E8E810DB46B8A5550ED5BF8E4042B5A
 </span></span><span style="display:flex;"><span>uid           [ultimate] your@email.example
@@ -480,7 +577,7 @@ however add more, for multiple email addresses. This also shows that you
 trust this key ultimate-ly. Only trust your own keys to that level. But more to
 that later.</p>
 <p>The <code>sec</code> shows the private primary key, <code>ssb</code> the private subkey.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>❯ gpg -k your@email.example
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>❯ gpg -k your@email.example
 </span></span><span style="display:flex;"><span>pub   ed25519 2025-01-05 [C] [expires: 2026-01-05]
 </span></span><span style="display:flex;"><span>      8CE453902E8E810DB46B8A5550ED5BF8E4042B5A
 </span></span><span style="display:flex;"><span>uid           [ultimate] your@email.example
@@ -488,7 +585,7 @@ that later.</p>
 </span></span><span style="display:flex;"><span>sub   cv25519 2025-01-05 [E] [expires: 2026-01-05]
 </span></span></code></pre></div><p>For this key and for imported public keys you can also see <code>pub</code> for the primary
 key and <code>sub</code> for the public subkey.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>❯ gpg --keyid-format 0xlong -K --with-subkey-fingerprint --with-keygrip your@email.example
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>❯ gpg --keyid-format 0xlong -K --with-subkey-fingerprint --with-keygrip your@email.example
 </span></span><span style="display:flex;"><span>sec   ed25519/0x50ED5BF8E4042B5A 2025-01-05 [C] [expires: 2026-01-05]
 </span></span><span style="display:flex;"><span>      8CE453902E8E810DB46B8A5550ED5BF8E4042B5A
 </span></span><span style="display:flex;"><span>      Keygrip = 2BFDFFC57B771DCE7F009C3BEF37142EBCF4B8E5
@@ -515,7 +612,7 @@ key needs to be used comes first.</p>
 <h3 id="message">Message</h3>
 <p>Looking at a simple message (a new line), encrypting it to our newly created
 key, and then inspecting its packets.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>❯ echo |gpg -aer 8CE453902E8E810DB46B8A5550ED5BF8E4042B5A |gpg --list-packets
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>❯ echo |gpg -aer 8CE453902E8E810DB46B8A5550ED5BF8E4042B5A |gpg --list-packets
 </span></span><span style="display:flex;"><span>gpg: encrypted with cv25519 key, ID 587AE7468688C837, created 2025-01-05
 </span></span><span style="display:flex;"><span>      &#34;your@email.example&#34;
 </span></span><span style="display:flex;"><span># off<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span> ctb<span style="color:#f92672">=</span><span style="color:#ae81ff">84</span> tag<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span> hlen<span style="color:#f92672">=</span><span style="color:#ae81ff">2</span> plen<span style="color:#f92672">=</span><span style="color:#ae81ff">94</span>
@@ -562,7 +659,7 @@ way the hash for for the signature can be calculated while the message is
 already in memory.</p>
 <h3 id="key">Key</h3>
 <p>You can do the same on public and secret keys.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>❯ gpg --export your@email.example -a |gpg --list-packets
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>❯ gpg --export your@email.example -a |gpg --list-packets
 </span></span><span style="display:flex;"><span># off<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span> ctb<span style="color:#f92672">=</span><span style="color:#ae81ff">98</span> tag<span style="color:#f92672">=</span><span style="color:#ae81ff">6</span> hlen<span style="color:#f92672">=</span><span style="color:#ae81ff">2</span> plen<span style="color:#f92672">=</span><span style="color:#ae81ff">51</span>
 </span></span><span style="display:flex;"><span>:public key packet:
 </span></span><span style="display:flex;"><span>        version 4, algo 22, created 1736114781, expires 0
@@ -680,13 +777,13 @@ up your secret keys. The easiest way is to just backup the entire <code>GNUPGHOM
 usually <code>~/.gnupg/</code>. In my case I have LUKS encrypted flash drive I copy it to.
 All usual backup practices apply — 3-2-1, in case your house gets struck by
 lightning while the flash drive is inserted into your computer.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>DATE<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>date +%F<span style="color:#66d9ef">)</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>DATE<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>date +%F<span style="color:#66d9ef">)</span>
 </span></span><span style="display:flex;"><span>mkdir /run/media/syphdias/LUKS001/gpg/.gnupg-$DATE
 </span></span><span style="display:flex;"><span>rsync -aP ~/.gnupg/ /run/media/syphdias/LUKS001/gpg/.gnupg-$DATE
 </span></span></code></pre></div><p>I use the date, in case I mess something up, during renewal. Now we remove the
 primary key from our keyring on the device. We already found the keygrip when
 looking at our keys.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>❯ rm ~/.gnupg/private-keys-v1.d/2BFDFFC57B771DCE7F009C3BEF37142EBCF4B8E5.key
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>❯ rm ~/.gnupg/private-keys-v1.d/2BFDFFC57B771DCE7F009C3BEF37142EBCF4B8E5.key
 </span></span><span style="display:flex;"><span>❯ GNUPGHOME=gnupg_202501051540_gqK/ gpg -K
 </span></span><span style="display:flex;"><span>/home/syphdias/.gnupg/pubring.kbx
 </span></span><span style="display:flex;"><span>--------------------------------------------------------------------------------
@@ -700,7 +797,7 @@ caveats from above.</p>
 <h3 id="renewing-with-offline-key">Renewing with Offline Key</h3>
 <p>A year has passed and you are still into GPG for some nerdish reason and want to
 keep working with out keys without regenerating completely new ones.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>❯ cd /run/media/syphdias/LUKS001/gpg/
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>❯ cd /run/media/syphdias/LUKS001/gpg/
 </span></span><span style="display:flex;"><span>❯ cp -r .gnupg-2024-01-10/ .gnupg-2025-01-14/
 </span></span><span style="display:flex;"><span>❯ # only work on a copy of your backup for safety
 </span></span><span style="display:flex;"><span>❯ gpg --quick-set-expire
@@ -717,7 +814,7 @@ backup to copy for next year.</p>
 machine(s) now. You could copy the subkeys by keygrip — dont! Or copy over the
 entire keyring and remove the primary key again — meh! The proper way is to
 export the secret subkeys only and import them into your current keyring.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>❯ # check if you will import what you wanted
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>❯ # check if you will import what you wanted
 </span></span><span style="display:flex;"><span>❯ GNUPGHOME=.gnupg-2025-01-14 gpg --export-secret-subkeys --export-options export-minimal 8CE453902E8E810DB46B8A5550ED5BF8E4042B5A |gpg --import --import-options show-only
 </span></span><span style="display:flex;"><span>❯ GNUPGHOME=.gnupg-2025-01-14 gpg --export-secret-subkeys --export-options export-minimal 8CE453902E8E810DB46B8A5550ED5BF8E4042B5A |gpg --import
 </span></span><span style="display:flex;"><span>❯ # if you published your GPG key, update the published key
@@ -754,7 +851,7 @@ nerd sports for enthusiasts that do it for the fun of it. The practical
 application is basically dead. Trust on first use (TOFU) is easier in practice
 with less overhead. You can combine the two modes by setting <code>trust-model tofu+pgp</code> in your <code>${GNUPGHOME:-$HOME/.gnupg}/gpg.conf</code>.</p>
 <p>YubiKeys has more uses than acting as a smartcard for GPG.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>❯ ykman --device 12345678 info
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>❯ ykman --device 12345678 info
 </span></span><span style="display:flex;"><span>WARNING: PC/SC not available. Smart card (CCID) protocols will not function.
 </span></span><span style="display:flex;"><span>ERROR: Unable to list devices for connection
 </span></span><span style="display:flex;"><span>Device type: YubiKey 5C NFC
@@ -764,7 +861,7 @@ with less overhead. You can combine the two modes by setting <code>trust-model t
 </span></span><span style="display:flex;"><span>Enabled USB interfaces: OTP, FIDO, CCID
 </span></span><span style="display:flex;"><span>NFC transport is enabled
 </span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
-</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span>Applications    USB     NFC
+</span></span></span><span style="display:flex;"><span>Applications    USB     NFC
 </span></span><span style="display:flex;"><span>Yubico OTP      Enabled Enabled
 </span></span><span style="display:flex;"><span>FIDO U2F        Enabled Enabled
 </span></span><span style="display:flex;"><span>FIDO2           Enabled Enabled
@@ -825,7 +922,7 @@ eventually).</p>
 <h2 id="broken-electron-based-applications">Broken Electron-based Applications</h2>
 <p>When I tried to launch my note taking app <a href="https://obsidian.md/">Obsidian</a>, it never started. I
 dropped into a shell and tried again.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>❯ obsidian
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>❯ obsidian
 </span></span><span style="display:flex;"><span>/usr/lib/electron25/electron: error while loading shared libraries: libdav1d.so.6: cannot open shared object file: No such file or directory
 </span></span></code></pre></div><p>I had seem behavior like this before after an update. When you update your
 kernel and you are still running the old kernel. If the running (old) kernel
@@ -859,7 +956,7 @@ red herrings. One is, that the package <code>electron</code> is only a meta pack
 <code>/usr/bin/electron25</code> is a shell script to exec <code>/usr/lib/electron25/electron</code>.
 So to check for the shared library dependencies, we can follow the trail like
 this:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>❯ which electron
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>❯ which electron
 </span></span><span style="display:flex;"><span>/usr/bin/electron
 </span></span><span style="display:flex;"><span>❯ ls -l /usr/bin/electron
 </span></span><span style="display:flex;"><span>lrwxrwxrwx 1 root root 10 Jun 16 08:50 /usr/bin/electron -&gt; electron25
@@ -877,7 +974,7 @@ this:</p>
 <p><strong>Tip 3</strong>: Find the binary that is actually run.</p>
 </blockquote>
 <p>To find the libraries you can run <code>ldd</code> and filtered for the library name.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>❯ ldd /usr/lib/electron25/electron | grep libdav1d
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>❯ ldd /usr/lib/electron25/electron | grep libdav1d
 </span></span><span style="display:flex;"><span>	libdav1d.so.7 =&gt; /usr/lib/libdav1d.so.7 (0x00007f41ea424000)
 </span></span><span style="display:flex;"><span>❯ ls -l /usr/lib/libdav1d.so.7
 </span></span><span style="display:flex;"><span>lrwxrwxrwx 1 root root 17 Oct  4 17:21 /usr/lib/libdav1d.so.7 -&gt; libdav1d.so.7.0.0
@@ -895,7 +992,7 @@ above it complained about <code>libdav1d.so.6</code> being absent.</p>
 help of <code>lddtree</code> (from the package <code>pax-utils</code>) I could look recursively at the
 required libraries. Again, I filtered for the relevant library name but show 5
 lines above the matches to see potential parent dependencies.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>❯ lddtree /usr/lib/electron25/electron | grep -B5 libdav1d
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>❯ lddtree /usr/lib/electron25/electron | grep -B5 libdav1d
 </span></span><span style="display:flex;"><span>    libavcodec.so.60 =&gt; /usr/lib/libavcodec.so.60
 </span></span><span style="display:flex;"><span>        libswresample.so.4 =&gt; /usr/lib/libswresample.so.4
 </span></span><span style="display:flex;"><span>            libsoxr.so.0 =&gt; /usr/lib/libsoxr.so.0
@@ -913,7 +1010,7 @@ lines above the matches to see potential parent dependencies.</p>
 <code>libdav1d.so.6</code> as dependency of <code>libavcodec.so.60</code>. It cannot resolve the name
 to a library location so <code>None</code> gets displayed.</p>
 <p>So where is this library from?</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>❯ pacman -F libavcodec.so.60
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>❯ pacman -F libavcodec.so.60
 </span></span><span style="display:flex;"><span>extra/ffmpeg 2:6.0-12
 </span></span><span style="display:flex;"><span>    usr/lib/libavcodec.so.60
 </span></span><span style="display:flex;"><span>❯ pacman -Qi ffmpeg |grep -e Name -e Prov -e Requi
@@ -991,11 +1088,11 @@ Monday. This happens if the first was a Sunday, or if the first was a Saturday
 and the second was a Sunday. There is no overlap.</li>
 </ul>
 <p>To verify this is true we can use (<code>--iterations</code> is optional but very useful):</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>systemd-analyze calendar <span style="color:#e6db74">&#39;Mon..Fri *-*-01&#39;</span> <span style="color:#e6db74">&#39;Mon *-*-02..03&#39;</span> --iterations <span style="color:#ae81ff">10</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>systemd-analyze calendar <span style="color:#e6db74">&#39;Mon..Fri *-*-01&#39;</span> <span style="color:#e6db74">&#39;Mon *-*-02..03&#39;</span> --iterations <span style="color:#ae81ff">10</span>
 </span></span></code></pre></div><p>The output is a bit unwieldy since it treats both expressions separately and
 prints three versions of the iterations.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>systemd-analyze calendar <span style="color:#e6db74">&#39;Mon..Fri *-*-01&#39;</span> <span style="color:#e6db74">&#39;Mon *-*-02..03&#39;</span> --iterations <span style="color:#ae81ff">10</span> <span style="color:#ae81ff">\
-</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    |grep Iteration |sort -k4
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>systemd-analyze calendar <span style="color:#e6db74">&#39;Mon..Fri *-*-01&#39;</span> <span style="color:#e6db74">&#39;Mon *-*-02..03&#39;</span> --iterations <span style="color:#ae81ff">10</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span>    |grep Iteration |sort -k4
 </span></span></code></pre></div><p>This works for a English locale but it will filter out the first iteration
 because it is listed as &ldquo;Next elapse&rdquo;. The get a good overview in this case it
 suffices.</p>
@@ -1012,10 +1109,10 @@ month was a Friday. This happens if the weekend is on the last day of the
 month.</li>
 </ul>
 <p>Verifying this works just the same:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>systemd-analyze calendar <span style="color:#e6db74">&#39;Mon..Fri *-*~01&#39;</span> <span style="color:#e6db74">&#39;Fri *-*~02..03&#39;</span> --iterations <span style="color:#ae81ff">10</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>systemd-analyze calendar <span style="color:#e6db74">&#39;Mon..Fri *-*~01&#39;</span> <span style="color:#e6db74">&#39;Fri *-*~02..03&#39;</span> --iterations <span style="color:#ae81ff">10</span>
 </span></span></code></pre></div><p>Optionally, filter and sort with the caveats from above:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>systemd-analyze calendar <span style="color:#e6db74">&#39;Mon..Fri *-*~01&#39;</span> <span style="color:#e6db74">&#39;Fri *-*~02..03&#39;</span> --iterations <span style="color:#ae81ff">10</span> <span style="color:#ae81ff">\
-</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    |grep Iteration |sort -k4
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>systemd-analyze calendar <span style="color:#e6db74">&#39;Mon..Fri *-*~01&#39;</span> <span style="color:#e6db74">&#39;Fri *-*~02..03&#39;</span> --iterations <span style="color:#ae81ff">10</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span>    |grep Iteration |sort -k4
 </span></span></code></pre></div>]]></content:encoded></item><item><title>Killing your Ceph with Autoscaling</title><link>https://www.relg.uk/posts/killing-your-ceph-with-autoscaling/</link><pubDate>Wed, 11 Jan 2023 22:42:15 +0100</pubDate><guid>https://www.relg.uk/posts/killing-your-ceph-with-autoscaling/</guid><description>&lt;p&gt;I recently was consulted on a Ceph Cluster running into nearfull and backfillfull
 for the first time. One Ceph OSD was utilized over 85% and another over 90%. The
 operators were unaware of the meaning and what to do about it, so took a look.&lt;/p&gt;
@@ -1118,7 +1215,7 @@ profile to turn them off completely for low loads.</p>
 <p>Step one: Set &ldquo;Fan Speed Mode&rdquo; to &ldquo;Quiet mode&rdquo; via the GUI in &ldquo;Hardware &amp;
 Power&rdquo;. This can also be done by setting</p>
 <p>Step two: Turning off fan check to allow for 0 speed operations.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span># cat /usr/local/etc/rc.d/fan_check_disable.sh &lt;&lt;EOF
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-console" data-lang="console"><span style="display:flex;"><span># cat /usr/local/etc/rc.d/fan_check_disable.sh &lt;&lt;EOF
 </span></span><span style="display:flex;"><span>#!/bin/sh
 </span></span><span style="display:flex;"><span>echo 0 &gt; /sys/module/avoton_synobios/parameters/check_fan
 </span></span><span style="display:flex;"><span>EOF
@@ -1126,36 +1223,36 @@ Power&rdquo;. This can also be done by setting</p>
 </span></span></code></pre></div><p>Step three: Backup <code>/usr/syno/etc.defaults/scemd.xml</code> and <code>usr/syno/etc/scemd.xml</code>
 Step four: Adjust fan profile as described in the <a href="https://return2.net/how-to-make-synology-diskstation-fans-quieter/">guide</a> with some modifications
 in <code>/usr/syno/etc.defaults/scemd.xml</code> and <code>usr/syno/etc/scemd.xml</code>.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-diff" data-lang="diff"><span style="display:flex;"><span><span style="color:#f92672">--- /usr/syno/etc/scemd.xml_2022-04-23	2021-10-18 15:26:05.000000000 +0200
-</span></span></span><span style="display:flex;"><span><span style="color:#f92672"></span><span style="color:#a6e22e">+++ /usr/syno/etc/scemd.xml	2022-04-23 01:12:07.740595553 +0200
-</span></span></span><span style="display:flex;"><span><span style="color:#a6e22e"></span><span style="color:#75715e">@@ -14,17 +14,21 @@
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span> 		&lt;cpu_temperature fan_speed=&#34;99%40hz&#34; action=&#34;SHUTDOWN&#34;&gt;95&lt;/cpu_temperature&gt;
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-diff" data-lang="diff"><span style="display:flex;"><span><span style="color:#f92672">--- /usr/syno/etc/scemd.xml_2022-04-23	2021-10-18 15:26:05.000000000 +0200
+</span></span></span><span style="display:flex;"><span><span style="color:#a6e22e">+++ /usr/syno/etc/scemd.xml	2022-04-23 01:12:07.740595553 +0200
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">@@ -14,17 +14,21 @@
+</span></span></span><span style="display:flex;"><span> 		&lt;cpu_temperature fan_speed=&#34;99%40hz&#34; action=&#34;SHUTDOWN&#34;&gt;95&lt;/cpu_temperature&gt;
 </span></span><span style="display:flex;"><span> 	&lt;/fan_config&gt;
 </span></span><span style="display:flex;"><span> 	&lt;fan_config period=&#34;20&#34; threshold=&#34;6&#34; type=&#34;DUAL_MODE_LOW&#34; hibernation_speed=&#34;UNKNOWN&#34;&gt;
 </span></span><span style="display:flex;"><span><span style="color:#f92672">-		&lt;disk_temperature fan_speed=&#34;21%40hz&#34; action=&#34;NONE&#34;&gt;0&lt;/disk_temperature&gt;
 </span></span></span><span style="display:flex;"><span><span style="color:#f92672">-		&lt;disk_temperature fan_speed=&#34;35%40hz&#34; action=&#34;NONE&#34;&gt;42&lt;/disk_temperature&gt;
 </span></span></span><span style="display:flex;"><span><span style="color:#f92672">-		&lt;disk_temperature fan_speed=&#34;50%40hz&#34; action=&#34;NONE&#34;&gt;46&lt;/disk_temperature&gt;
 </span></span></span><span style="display:flex;"><span><span style="color:#f92672">-		&lt;disk_temperature fan_speed=&#34;70%40hz&#34; action=&#34;NONE&#34;&gt;53&lt;/disk_temperature&gt;
-</span></span></span><span style="display:flex;"><span><span style="color:#f92672"></span><span style="color:#a6e22e">+		&lt;disk_temperature fan_speed=&#34;01%40hz&#34; action=&#34;NONE&#34;&gt;0&lt;/disk_temperature&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#a6e22e">+		&lt;disk_temperature fan_speed=&#34;01%40hz&#34; action=&#34;NONE&#34;&gt;0&lt;/disk_temperature&gt;
 </span></span></span><span style="display:flex;"><span><span style="color:#a6e22e">+		&lt;disk_temperature fan_speed=&#34;10%40hz&#34; action=&#34;NONE&#34;&gt;41&lt;/disk_temperature&gt;
 </span></span></span><span style="display:flex;"><span><span style="color:#a6e22e">+		&lt;disk_temperature fan_speed=&#34;20%40hz&#34; action=&#34;NONE&#34;&gt;46&lt;/disk_temperature&gt;
 </span></span></span><span style="display:flex;"><span><span style="color:#a6e22e">+		&lt;disk_temperature fan_speed=&#34;35%40hz&#34; action=&#34;NONE&#34;&gt;48&lt;/disk_temperature&gt;
 </span></span></span><span style="display:flex;"><span><span style="color:#a6e22e">+		&lt;disk_temperature fan_speed=&#34;50%40hz&#34; action=&#34;NONE&#34;&gt;50&lt;/disk_temperature&gt;
 </span></span></span><span style="display:flex;"><span><span style="color:#a6e22e">+		&lt;disk_temperature fan_speed=&#34;70%40hz&#34; action=&#34;NONE&#34;&gt;54&lt;/disk_temperature&gt;
-</span></span></span><span style="display:flex;"><span><span style="color:#a6e22e"></span> 		&lt;disk_temperature fan_speed=&#34;99%40hz&#34; action=&#34;NONE&#34;&gt;58&lt;/disk_temperature&gt;
+</span></span></span><span style="display:flex;"><span> 		&lt;disk_temperature fan_speed=&#34;99%40hz&#34; action=&#34;NONE&#34;&gt;58&lt;/disk_temperature&gt;
 </span></span><span style="display:flex;"><span> 		&lt;disk_temperature fan_speed=&#34;99%40hz&#34; action=&#34;SHUTDOWN&#34;&gt;61&lt;/disk_temperature&gt;
 </span></span><span style="display:flex;"><span> 
 </span></span><span style="display:flex;"><span><span style="color:#f92672">-		&lt;cpu_temperature fan_speed=&#34;21%40hz&#34; action=&#34;NONE&#34;&gt;0&lt;/cpu_temperature&gt;
 </span></span></span><span style="display:flex;"><span><span style="color:#f92672">-		&lt;cpu_temperature fan_speed=&#34;50%40hz&#34; action=&#34;NONE&#34;&gt;50&lt;/cpu_temperature&gt;
 </span></span></span><span style="display:flex;"><span><span style="color:#f92672">-		&lt;cpu_temperature fan_speed=&#34;99%40hz&#34; action=&#34;NONE&#34;&gt;85&lt;/cpu_temperature&gt;
 </span></span></span><span style="display:flex;"><span><span style="color:#f92672">-		&lt;cpu_temperature fan_speed=&#34;99%40hz&#34; action=&#34;SHUTDOWN&#34;&gt;95&lt;/cpu_temperature&gt;
-</span></span></span><span style="display:flex;"><span><span style="color:#f92672"></span><span style="color:#a6e22e">+		&lt;cpu_temperature fan_speed=&#34;01%40hz&#34; action=&#34;NONE&#34;&gt;0&lt;/cpu_temperature&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#a6e22e">+		&lt;cpu_temperature fan_speed=&#34;01%40hz&#34; action=&#34;NONE&#34;&gt;0&lt;/cpu_temperature&gt;
 </span></span></span><span style="display:flex;"><span><span style="color:#a6e22e">+		&lt;cpu_temperature fan_speed=&#34;10%40hz&#34; action=&#34;NONE&#34;&gt;57&lt;/cpu_temperature&gt;
 </span></span></span><span style="display:flex;"><span><span style="color:#a6e22e">+		&lt;cpu_temperature fan_speed=&#34;20%40hz&#34; action=&#34;NONE&#34;&gt;62&lt;/cpu_temperature&gt;
 </span></span></span><span style="display:flex;"><span><span style="color:#a6e22e">+		&lt;cpu_temperature fan_speed=&#34;50%40hz&#34; action=&#34;NONE&#34;&gt;65&lt;/cpu_temperature&gt;
 </span></span></span><span style="display:flex;"><span><span style="color:#a6e22e">+		&lt;cpu_temperature fan_speed=&#34;99%40hz&#34; action=&#34;NONE&#34;&gt;80&lt;/cpu_temperature&gt;
 </span></span></span><span style="display:flex;"><span><span style="color:#a6e22e">+		&lt;cpu_temperature fan_speed=&#34;99%40hz&#34; action=&#34;SHUTDOWN&#34;&gt;90&lt;/cpu_temperature&gt;
-</span></span></span><span style="display:flex;"><span><span style="color:#a6e22e"></span> 	&lt;/fan_config&gt;
+</span></span></span><span style="display:flex;"><span> 	&lt;/fan_config&gt;
 </span></span><span style="display:flex;"><span> 
 </span></span><span style="display:flex;"><span> &lt;fan_config hw_version=&#34;Synology-DX5&#34; period=&#34;20&#34; threshold=&#34;6&#34; type=&#34;DUAL_MODE_HIGH_EBOX&#34; hibernation_speed=&#34;FULL&#34;&gt;
 </span></span></code></pre></div><p>Step five: Reboot NAS</p>
@@ -1165,24 +1262,24 @@ skipped something more obvious. The IronWolf drives I bought are really loud
 when spun up – louder than the stock fan configuration in fact. For quiet
 operation they need to spin down when idle.</p>
 <p>Looking at the md configuration I noticed something odd.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span># cat /proc/mdstat
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-console" data-lang="console"><span style="display:flex;"><span># cat /proc/mdstat
 </span></span><span style="display:flex;"><span>Personalities : [raid1]
 </span></span><span style="display:flex;"><span>md2 : active raid1 sda3[0]
 </span></span><span style="display:flex;"><span>      239376512 blocks super 1.2 [1/1] [U]
 </span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
-</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span>md1 : active raid1 sda2[0]
+</span></span></span><span style="display:flex;"><span>md1 : active raid1 sda2[0]
 </span></span><span style="display:flex;"><span>      2097088 blocks [4/1] [U___]
 </span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
-</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span>md0 : active raid1 sda1[0]
+</span></span></span><span style="display:flex;"><span>md0 : active raid1 sda1[0]
 </span></span><span style="display:flex;"><span>      2490176 blocks [4/1] [U___]
 </span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
-</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span>unused devices: &lt;none&gt;
+</span></span></span><span style="display:flex;"><span>unused devices: &lt;none&gt;
 </span></span></code></pre></div><p>The first SSD (<code>sda</code>) I inserted was split into 3 partitions and turned into 3
 arrays. <code>md2</code> was the main bulk and what will is volume1. It is not mounted
 directly to <code>/volume1</code> tough, but through <code>/dev/mapper/cachedev_0</code>. I assume
 this is to enable adding a caching device later (which makes no sense in this
 case) to be more flexible.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span># df -h /volume1/
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-console" data-lang="console"><span style="display:flex;"><span># df -h /volume1/
 </span></span><span style="display:flex;"><span>Filesystem              Size  Used Avail Use% Mounted on
 </span></span><span style="display:flex;"><span>/dev/mapper/cachedev_0  220G   92G  101G  48% /volume1
 </span></span><span style="display:flex;"><span># ls -l /dev/mapper/cachedev_0 /dev/md2
@@ -1194,43 +1291,43 @@ case) to be more flexible.</p>
 </span></span></code></pre></div><p><code>md0</code>(<code>sda1</code>) is used for <code>/</code> while I could not exactly figure out what
 <code>md1</code>(<code>sda2</code>) was used for – I read it was swap somewhere but I could not verify
 that, so don&rsquo;t quote me on that.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span># df -h /
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-console" data-lang="console"><span style="display:flex;"><span># df -h /
 </span></span><span style="display:flex;"><span>Filesystem      Size  Used Avail Use% Mounted on
 </span></span><span style="display:flex;"><span>/dev/md0        2.3G  1.2G  1.1G  52% /
 </span></span></code></pre></div><p>Notice <code>[U___]</code> on both <code>md0</code> and <code>md1</code> and what happens after I insert a second
 SSD and configure it as Storage Pool 2 (no volume) via the GUI.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span># cat /proc/mdstat
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-console" data-lang="console"><span style="display:flex;"><span># cat /proc/mdstat
 </span></span><span style="display:flex;"><span>Personalities : [raid1]
 </span></span><span style="display:flex;"><span>md3 : active raid1 sdb3[0]
 </span></span><span style="display:flex;"><span>      120212800 blocks super 1.2 [1/1] [U]
 </span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
-</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span>md2 : active raid1 sda3[0]
+</span></span></span><span style="display:flex;"><span>md2 : active raid1 sda3[0]
 </span></span><span style="display:flex;"><span>      239376512 blocks super 1.2 [1/1] [U]
 </span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
-</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span>md1 : active raid1 sdb2[4] sda2[0]
+</span></span></span><span style="display:flex;"><span>md1 : active raid1 sdb2[4] sda2[0]
 </span></span><span style="display:flex;"><span>      2097088 blocks [4/1] [U___]
 </span></span><span style="display:flex;"><span>      [=======&gt;.............]  recovery = 37.0% (776576/2097088) finish=0.5min speed=36979K/sec
 </span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
-</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span>md0 : active raid1 sdb1[4] sda1[0]
+</span></span></span><span style="display:flex;"><span>md0 : active raid1 sdb1[4] sda1[0]
 </span></span><span style="display:flex;"><span>      2490176 blocks [4/1] [U___]
 </span></span><span style="display:flex;"><span>      [=====&gt;...............]  recovery = 28.7% (716928/2490176) finish=0.9min speed=32587K/sec
 </span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
-</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span>unused devices: &lt;none&gt;
+</span></span></span><span style="display:flex;"><span>unused devices: &lt;none&gt;
 </span></span><span style="display:flex;"><span># cat /proc/mdstat
 </span></span><span style="display:flex;"><span>Personalities : [raid1]
 </span></span><span style="display:flex;"><span>md3 : active raid1 sdb3[0]
 </span></span><span style="display:flex;"><span>      120212800 blocks super 1.2 [1/1] [U]
 </span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
-</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span>md2 : active raid1 sda3[0]
+</span></span></span><span style="display:flex;"><span>md2 : active raid1 sda3[0]
 </span></span><span style="display:flex;"><span>      239376512 blocks super 1.2 [1/1] [U]
 </span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
-</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span>md1 : active raid1 sdb2[1] sda2[0]
+</span></span></span><span style="display:flex;"><span>md1 : active raid1 sdb2[1] sda2[0]
 </span></span><span style="display:flex;"><span>      2097088 blocks [4/2] [UU__]
 </span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
-</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span>md0 : active raid1 sdb1[1] sda1[0]
+</span></span></span><span style="display:flex;"><span>md0 : active raid1 sdb1[1] sda1[0]
 </span></span><span style="display:flex;"><span>      2490176 blocks [4/2] [UU__]
 </span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
-</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span>unused devices: &lt;none&gt;
+</span></span></span><span style="display:flex;"><span>unused devices: &lt;none&gt;
 </span></span></code></pre></div><p>Initializing the new disk resulted in it being split into three partitions as
 well. It added the first two partitions to the RAID1 arrays <code>md0</code> and <code>md1</code> and
 left the third partition for usage. This is kind of clever. After the initial
@@ -1241,7 +1338,7 @@ initialize a storage pool on.</p>
 <p>I inserted my 2 10T HDDs now, and indeed they undergo the same procedure. The
 array sync took about 1-2 minutes this time and I ended up with <code>md4</code> and 2 more
 members for <code>md0</code> and <code>md1</code>.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span># cat /proc/mdstat
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-console" data-lang="console"><span style="display:flex;"><span># cat /proc/mdstat
 </span></span><span style="display:flex;"><span>Personalities : [raid1]
 </span></span><span style="display:flex;"><span>md4 : active raid1 sdd3[1] sdc3[0]
 </span></span><span style="display:flex;"><span>      9761614848 blocks super 1.2 [2/2] [UU]
@@ -1249,7 +1346,7 @@ members for <code>md0</code> and <code>md1</code>.</p>
 </span></span><span style="display:flex;"><span>md1 : active raid1 sdd2[3] sdc2[2] sdb2[1] sda2[0]
 </span></span><span style="display:flex;"><span>      2097088 blocks [4/4] [UUUU]
 </span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
-</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span>md0 : active raid1 sdd1[3] sdc1[2] sdb1[1] sda1[0]
+</span></span></span><span style="display:flex;"><span>md0 : active raid1 sdd1[3] sdc1[2] sdb1[1] sda1[0]
 </span></span><span style="display:flex;"><span>      2490176 blocks [4/4] [UUUU]
 </span></span><span style="display:flex;"><span>[...]
 </span></span></code></pre></div><p>This is great for simplicity and redundancy. I can yank any 3 disks and my
@@ -1261,7 +1358,7 @@ fails (<code>1</code> for &ldquo;Cannot Enter Hibernation&rdquo; or <code>2</cod
 Hibernation&rdquo;). The older one used in many forum posts was and no longer
 available (<code>syno_hibernate_debug_tool --enable 1</code>)</p>
 <p>I enabled the debug log by <a href="https://www.synology-forum.de/threads/dsm6-syno_hibernation_debug.85792/">setting some options</a> in <code>/etc/synoinfo.conf</code></p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-ini" data-lang="ini"><span style="display:flex;"><span><span style="color:#a6e22e">enable_hibernation_debug</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;yes&#34;</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-ini" data-lang="ini"><span style="display:flex;"><span><span style="color:#a6e22e">enable_hibernation_debug</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;yes&#34;</span>
 </span></span><span style="display:flex;"><span><span style="color:#a6e22e">hibernation_debug_level</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;1&#34;</span>
 </span></span></code></pre></div><p>I tailed <code>/var/log/hibernationFull.log</code> to get a feel what happens. I stopped
 the <code>tail</code> after I realised that reading a file from the disk I want to see idle
@@ -1297,7 +1394,7 @@ it that I cannot do by hand without waking the disks up by myself. But I still
 have the feeling that internals might be at play that will always sync the array
 at some point in time. I don&rsquo;t want the system to be on HDDs.</p>
 <p>I tried again, this time by hand.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>echo <span style="color:#ae81ff">1</span> &gt; /proc/sys/vm/block_dump
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>echo <span style="color:#ae81ff">1</span> &gt; /proc/sys/vm/block_dump
 </span></span><span style="display:flex;"><span><span style="color:#66d9ef">while</span> sleep 1s; <span style="color:#66d9ef">do</span> cat /sys/block/sd<span style="color:#f92672">{</span>a..d<span style="color:#f92672">}</span>/device/syno_idle_time; echo; <span style="color:#66d9ef">done</span>
 </span></span></code></pre></div><p>This time is was something else.</p>
 <pre tabindex="0"><code>[Sat Apr 23 16:41:17 2022] ppid:1(systemd), pid:14381(scemd), dirtied inode 30475 (disk_overview.xml) on md0
@@ -1312,7 +1409,7 @@ logging, etc.?</p>
 in sync to the same value, makes me sure that with this configuration it will be
 very hard to achieve total silence with spin down or even debug it properly.</p>
 <p>I removed the HDD partitions form arrays <code>md0</code> and <code>md1</code>.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>mdadm /dev/md0 --fail /dev/sdc1
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>mdadm /dev/md0 --fail /dev/sdc1
 </span></span><span style="display:flex;"><span>mdadm /dev/md0 --remove /dev/sdc1
 </span></span><span style="display:flex;"><span>mdadm /dev/md0 --fail /dev/sdd1
 </span></span><span style="display:flex;"><span>mdadm /dev/md0 --remove /dev/sdd1
