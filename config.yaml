@@ -37,7 +37,7 @@ params:
   social:
     fediverse_creator: "@syphdias@social.linux.pizza"
   images:
-    - site-logo.svg
+    - og-image.png
 
 menu:
   main:
